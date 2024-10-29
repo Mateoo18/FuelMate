@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'FuelMate.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Database_FuelMate_1',
+        'USER': 'root',
+        'PASSWORD': 'Projekt2024',
+        'HOST': 'database-fuelmate.cj82w604mzgq.eu-north-1.rds.amazonaws.com',
+        'PORT': '5432'
     }
 }
 
