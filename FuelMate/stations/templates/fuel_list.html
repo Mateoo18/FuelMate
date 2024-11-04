@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuel List</title>
+</head>
+<body>
+    <h1>Lista Paliw</h1>
+    <ul>
+        {% for fuel in fuels %}
+            <li>ID: {{ fuel.Fuel_Id }} | Nazwa: {{ fuel.Name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
