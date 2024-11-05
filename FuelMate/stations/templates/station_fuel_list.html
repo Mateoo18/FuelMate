@@ -1,0 +1,52 @@
+<!-- role_list.html -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Ról</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Ról</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID </th>
+                <th>Station id</th>
+                <th>Fuel id</th>
+                <th>Price</th>
+                <th>Update date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station_fuel in station_fuels %}
+                <tr>
+                    <td>{{ station_fuel.Station_Fuel_Id }}</td>
+                    <td>{{ station_fuel.Station_Id }}</td>
+                    <td>{{ station_fuel.Fuel_Id }}</td>
+                    <td>{{ station_fuel.Price }}</td>
+                    <td>{{ station_fuel.Date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

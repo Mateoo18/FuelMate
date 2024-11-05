@@ -1,0 +1,58 @@
+<!-- user_list.html -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Użytkowników</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Użytkowników</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Email</th>
+                <th>Miasto</th>
+                <th>Kod Pocztowy</th>
+                <th>Wybór Paliwa</th>
+                <th>Rola</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.UserId }}</td>
+                    <td>{{ user.First_name }}</td>
+                    <td>{{ user.Last_name }}</td>
+                    <td>{{ user.Email }}</td>
+                    <td>{{ user.Address }}</td>
+                    <td>{{ user.Postal_Code }}</td>
+                    <td>{{ user.Fuel }}</td>
+                    <td>{{ user.Role_Id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

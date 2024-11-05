@@ -1,0 +1,57 @@
+<!-- role_list.html -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Ról</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Ról</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID </th>
+                <th>Id stacji</th>
+                <th>User id</th>
+                <th>Fuel id</th>
+                <th>Opis</th>
+                <th>Start</th>
+                <th>Koniec</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for promotion in promotions %}
+                <tr>
+                    <td>{{ promotion.Promotion_Id }}</td>
+                    <td>{{ promotion.Station_Id }}</td>
+                    <td>{{ promotion.User_Id }}</td>
+                    <td>{{ promotion.Fuel_Id }}</td>
+                    <td>{{ promotion.Start_Date }}</td>
+                    <td>{{ promotion.End_Date }}</td>
+                    <td>{{ promotion.Comment }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
