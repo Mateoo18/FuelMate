@@ -1,3 +1,5 @@
 from django.shortcuts import render
-
-# Create your views here.
+from .models import Fuel
+def fuel_list(request):
+    fuels = Fuel.objects.all()
+    return render(request, 'fuel_list.html', {'fuels': fuels})
