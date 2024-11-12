@@ -1,0 +1,10 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Zalogowany{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h2>Witaj, {{ request.user.username }}! Jesteś zalogowany.</h2>
+        <p>To jest strona dla zalogowanych użytkowników.</p>
+    </div>
+{% endblock %}
