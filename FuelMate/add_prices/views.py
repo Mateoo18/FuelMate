@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-API_KEY = "AIzaSyDwZTv-LzP2cnElm9L6U_YBwFIbsyxYqJA"
+API_KEY = os.getenv("API_KEY_GOOGLE")
 
 
 client = googlemaps.Client(key=API_KEY)
