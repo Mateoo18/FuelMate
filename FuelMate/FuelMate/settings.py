@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'stations',
-    'accounts'
+    'accounts',
+    'add_prices'
 ]
 
 MIDDLEWARE = [

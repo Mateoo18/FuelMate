@@ -6,6 +6,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('stations.urls')),
     path('accounts/', include('accounts.urls')),
-
+    path('', include('add_prices.urls'))
 ]
 

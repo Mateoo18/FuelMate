@@ -1,0 +1,25 @@
+{% block content %}
+<h2>{{ station.name }} - Szczegóły stacji</h2>
+
+<h3>Aktualne ceny:</h3>
+<ul>
+  {% for price in prices %}
+    <li>{{ price.fuel_type }}: {{ price.price }} zł ({{ price.date }})</li>
+  {% endfor %}
+</ul>
+
+<h3>Dodaj nową cenę:</h3>
+<form method="post">
+  {% csrf_token %}
+  <label for="price_95">95:</label>
+  <input type="text" name="price_95" id="price_95">
+  <br>
+  <label for="price_98">98:</label>
+  <input type="text" name="price_98" id="price_98">
+  <br>
+  <label for="price_lpg">Gaz:</label>
+  <input type="text" name="price_lpg" id="price_lpg">
+  <br>
+  <button type="submit">Dodaj cenę</button>
+</form>
+{% endblock %}

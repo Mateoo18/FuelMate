@@ -1,0 +1,17 @@
+#locate-button {
+    position: sticky;
+    top: 20px; /* Ustawienie odległości od góry */
+    z-index: 10; /* Zapewnienie, że przycisk będzie nad innymi elementami */
+    background-color: white; /* Jeśli chcesz, by przycisk miał białe tło */
+    padding: 10px 20px; /* Opcjonalnie, by przycisk wyglądał lepiej */
+    border-radius: 5px; /* Dla ładniejszego wyglądu */
+    margin-bottom: 10px; /* Odstęp od innych elementów */
+}
+
+#button-container {
+    margin-bottom: 20px; /* Odstęp poniżej formularza */
+}
+
+#stations-list {
+    padding-top: 10px;
+}

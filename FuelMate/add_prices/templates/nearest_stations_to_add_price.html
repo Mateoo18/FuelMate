@@ -1,0 +1,48 @@
+{% block content %}
+<h2>Najbliższe stacje paliw</h2>
+
+<!-- Kontener dla formularza z przyciskiem -->
+<div id="button-container">
+    <form method="post" action="{% url 'nearest_stations' %}">
+        {% csrf_token %}
+        <button id="locate-button" type="button" onclick="getLocation()">Zlokalizuj mnie</button>
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
+    </form>
+</div>
+
+<!-- Lista stacji -->
+<div id="stations-list">
+    {% if stations %}
+        {% for station in stations %}
+            <div>
+                <p>{{ station.name }} - {{ station.address }}</p>
+                <a href="{% if station.id_stations %}{% url 'station_details' station.id_stations %}{% else %}# {% endif %}">Zmień cenę</a>
+            </div>
+        {% endfor %}
+    {% elif error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <p>Wyszukaj najbliższe stacje klikając przycisk "Zlokalizuj mnie".</p>
+    {% endif %}
+</div>
+
+<script>
+    function getLocation() {
+        document.getElementById("latitude").value = "";
+        document.getElementById("longitude").value = "";
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById("latitude").value = position.coords.latitude;
+                document.getElementById("longitude").value = position.coords.longitude;
+                // Po zebraniu współrzędnych, wysyłamy formularz
+                document.forms[0].submit();
+            });
+        } else {
+            alert("Geolokalizacja nie jest wspierana przez tę przeglądarkę.");
+        }
+    }
+</script>
+
+{% endblock %}
