@@ -7,5 +7,7 @@ urlpatterns = [
     path('', include('stations.urls')),
     path('accounts/', include('accounts.urls')),
 
+    path('profil_account/', include('profil_account.urls')),
+
 ]
 

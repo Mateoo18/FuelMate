@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Stacji Benzynowych</title>
+</head>
+<body>
+    <h1>Lista Stacji Benzynowych</h1>
+    <ul>
+        {% for station in gas_stations %}
+            <li>
+                ID: {{ station.Station_Id }} |
+                Nazwa: {{ station.Name }} |
+                Adres: {{ station.Address }} |
+                Miasto: {{ station.City }} |
+                Kod pocztowy: {{ station.Zip }} |
+                Szerokość: {{ station.Latitude }} |
+                Długość: {{ station.Longitude }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

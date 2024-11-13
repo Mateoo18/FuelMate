@@ -1,0 +1,48 @@
+<!-- role_list.html -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Ról</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Ról</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID </th>
+                <th>User ID</th>
+                <th>Station ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for favorite_station in favorite_stations %}
+                <tr>
+                    <td>{{ favorite_station.Favorite_Id }}</td>
+                    <td>{{ favorite_station.User_Id }}</td>
+                    <td>{{ favorite_station.Station_Id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

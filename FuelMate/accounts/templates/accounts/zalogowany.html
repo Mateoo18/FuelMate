@@ -6,5 +6,8 @@
     <div class="text-center">
         <h2>Witaj, {{ request.user.username }}! Jesteś zalogowany.</h2>
         <p>To jest strona dla zalogowanych użytkowników.</p>
+        <a href="{% url 'profil_account:profile' %}">Go to Profil</a>
+
+
     </div>
 {% endblock %}

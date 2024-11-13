@@ -2,14 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fuel List</title>
+    <title>DSUHDOS</title>
 </head>
 <body>
-    <h1>Lista Paliw</h1>
-    <ul>
-        {% for fuel in fuels %}
-            <li>ID: {{ fuel.fuel_id }} | Nazwa: {{ fuel.Name }}</li>
-        {% endfor %}
-    </ul>
+     <a href="{% url 'home' %}">Go to Fuel List</a>
 </body>
 </html>
