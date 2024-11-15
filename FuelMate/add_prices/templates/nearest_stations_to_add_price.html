@@ -1,9 +1,52 @@
 {% block content %}
 <h2>Najbliższe stacje paliw</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Najbliższe stacje paliw</title>
+    <style>
+        /* Stylizacja powiadomień */
+        #notifications {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .notification {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            animation: fadeIn 0.5s, fadeOut 0.5s 4.5s;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .notification.success { background-color: #d4edda; color: #155724; }
+        .notification.warning { background-color: #fff3cd; color: #856404; }
+        .notification.error { background-color: #f8d7da; color: #721c24; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+
 
 <!-- Kontener dla formularza z przyciskiem -->
 <div id="button-container">
-    <form method="post" action="{% url 'nearest_stations' %}">
+    <form method="post" action="{% url 'add_prices:nearest_stations' %}">
         {% csrf_token %}
         <button id="locate-button" type="button" onclick="getLocation()">Zlokalizuj mnie</button>
         <input type="hidden" name="latitude" id="latitude">
@@ -17,7 +60,8 @@
         {% for station in stations %}
             <div>
                 <p>{{ station.name }} - {{ station.address }}</p>
-                <a href="{% if station.id_stations %}{% url 'station_details' station.id_stations %}{% else %}# {% endif %}">Zmień cenę</a>
+                <a href="{% if station.id_stations %}{% url 'add_prices:update_prices' station.id_stations %}{% else %}# {% endif %}">Zmień cenę</a>
+
             </div>
         {% endfor %}
     {% elif error %}
@@ -43,6 +87,19 @@
             alert("Geolokalizacja nie jest wspierana przez tę przeglądarkę.");
         }
     }
+    const notifications = document.getElementById('notifications');
+    const djangoMessages = {{ serialized_messages|safe }};  // Przekazujemy serializowane wiadomości
+
+    djangoMessages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = `notification ${msg.tags}`;
+        div.textContent = msg.message;
+
+        notifications.appendChild(div);
+
+        // Usuń powiadomienie po 5 sekundach
+        setTimeout(() => div.remove(), 5000);
+    });
 </script>
 
 {% endblock %}
