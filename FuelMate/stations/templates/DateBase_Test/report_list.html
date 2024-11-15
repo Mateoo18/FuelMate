@@ -1,0 +1,57 @@
+<!-- user_list.html -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Reportow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Reportow</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User Id</th>
+                <th>Station ID</th>
+                <th>Fuel Id</th>
+                <th>Cena</th>
+                <th>Data zgłoszenia</th>
+                <th>Komentarz</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+                <tr>
+                    <td>{{ report.Report_Id }}</td>
+                    <td>{{ report.User_Id }}</td>
+                    <td>{{ report.Station_Id }}</td>
+                    <td>{{ report.Fuel_Id }}</td>
+                    <td>{{ report.Reported_price }}</td>
+                    <td>{{ report.Reported_date }}</td>
+                    <td>{{ report.Comment }}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

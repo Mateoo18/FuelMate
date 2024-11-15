@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Powiadomień</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista Powiadomień</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Notyfikacji</th>
+                <th>ID Użytkownika</th>
+                <th>Imię Użytkownika</th>
+                <th>Nazwisko Użytkownika</th>
+                <th>Nazwa Użytkownika</th>
+                <th>ID Stacji</th>
+                <th>ID Paliwa</th>
+                <th>Próg Cenowy</th>
+                <th>Status</th>
+                <th>Data Ustawienia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notification in notifications %}
+                <tr>
+                    <td>{{ notification.Notification_Id }}</td>                 <!-- ID Notyfikacji -->
+                    <td>{{ notification.User_Id.UserId }}</td>                   <!-- ID Użytkownika -->
+                    <td>{{ notification.User_Id.First_name }}</td>               <!-- Imię Użytkownika -->
+                    <td>{{ notification.User_Id.Last_name }}</td>                <!-- Nazwisko Użytkownika -->
+                    <td>{{ notification.User_Id.Username }}</td>                 <!-- Nazwa Użytkownika -->
+                    <td>{{ notification.Station_Id_id }}</td>                    <!-- ID Stacji -->
+                    <td>{{ notification.Fuel_Id_id }}</td>                       <!-- ID Paliwa -->
+                    <td>{{ notification.Price_Threshold }}</td>                  <!-- Próg Cenowy -->
+                    <td>{{ notification.Status }}</td>                           <!-- Status -->
+                    <td>{{ notification.Setting_Date }}</td>                     <!-- Data Ustawienia -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

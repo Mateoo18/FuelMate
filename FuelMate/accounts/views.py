@@ -4,12 +4,15 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse_lazy, reverse
 
+from stations.views import favorite_station_list
 from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required
+from stations.models import Users, Favorite_Station, Gas_Stations
 
 @login_required
 def logged_in_view(request):
     return render(request, 'accounts/zalogowany.html')
+
 def register_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -28,3 +31,11 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('stations:index')  # Redirect to stations app after login
+
+
+
+
+
+
+
+
