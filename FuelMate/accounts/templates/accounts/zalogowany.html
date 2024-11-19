@@ -1,10 +1,99 @@
 {% extends "accounts/base.html" %}
 
-{% block title %}Zalogowany{% endblock %}
+{% block title %}
+Strona zalogowanego użytkownika
+{% endblock %}
 
 {% block content %}
-    <div class="text-center">
-        <h2>Witaj, {{ request.user.username }}! Jesteś zalogowany.</h2>
-        <p>To jest strona dla zalogowanych użytkowników.</p>
-    </div>
+<div class="container">
+    <h2 class="text-center">Witamy na stronie użytkownika!</h2>
+
+    <!-- Sekcja wyszukiwania -->
+    <section class="mt-4">
+        <h3>Wyszukaj stacje paliw lub zlokalizuj mnie:</h3>
+        <form method="get" action="" class="row g-2 align-items-center mb-4">
+            <div class="col-auto flex-grow-1">
+                <input type="text" name="postal_code" placeholder="Wprowadź kod pocztowy" value="{{ postal_code }}" class="form-control">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Szukaj</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-success" onclick="locateMe()">Zlokalizuj mnie</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Wyniki wyszukiwania -->
+    <section>
+        <h3>Wyniki wyszukiwania:</h3>
+        <ul class="list-group mb-4">
+            {% if stations %}
+                {% for station in stations %}
+                    <li class="list-group-item">
+                        <strong>{{ station.name }}</strong><br>
+                        {{ station.address }}<br>
+                        Koordynaty: {{ station.latitude }}, {{ station.longitude }}
+                    </li>
+                {% endfor %}
+            {% elif nearby_stations %}
+                {% for station in nearby_stations %}
+                    <li class="list-group-item">
+                        <strong>{{ station.name }}</strong><br>
+                        {{ station.address }}<br>
+                        Koordynaty: {{ station.latitude }}, {{ station.longitude }}
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Brak wyników.</p>
+            {% endif %}
+        </ul>
+    </section>
+
+    <!-- Polecane stacje -->
+    <section>
+        <h3>Polecane stacje paliw:</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Adres</th>
+                    <th>Telefon</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for station in recommended_stations %}
+                    <tr>
+                        <td>{{ station.name }}</td>
+                        <td>{{ station.address }}</td>
+                        <td>{{ station.phone|default:"Brak telefonu" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script>
+    // Funkcja do lokalizacji użytkownika
+    function locateMe() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                // Przekierowanie z parametrami współrzędnych
+                const url = new URL(window.location.href);
+                url.searchParams.delete('postal_code'); // Usuń parametr kodu pocztowego
+                url.searchParams.set('latitude', latitude);
+                url.searchParams.set('longitude', longitude);
+                window.location.href = url.toString();
+            }, function (error) {
+                alert("Nie udało się pobrać lokalizacji. Upewnij się, że geolokalizacja jest włączona.");
+            });
+        } else {
+            alert("Twoja przeglądarka nie obsługuje geolokalizacji.");
+        }
+    }
+</script>
 {% endblock %}

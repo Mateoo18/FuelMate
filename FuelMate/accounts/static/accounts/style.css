@@ -1,0 +1,119 @@
+/* Ogólne */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+header {
+    background: #4CAF50;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Sekcja wyszukiwania */
+.search-section form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-section input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-section button {
+    padding: 8px 15px;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-section button:hover {
+    background: #45a049;
+}
+
+/* Wyniki */
+.results-section .stations-list,
+.nearest-section .stations-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.results-section .stations-list li,
+.nearest-section .stations-list li {
+    background: #fff;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Tabelka polecanych stacji */
+.recommended-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.recommended-section table th,
+.recommended-section table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.recommended-section table th {
+    background: #4CAF50;
+    color: white;
+}
+
+/* Przycisk lokalizacji */
+.locate-button {
+    padding: 10px 15px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.locate-button:hover {
+    background: #1976D2;
+}
+
+/* Przycisk wylogowania */
+.logout-button {
+    padding: 10px 15px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background: #d32f2f;
+}
+
+/* Pusta lista wyników */
+.no-results {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+}
