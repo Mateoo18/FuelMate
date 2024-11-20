@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stations',
     'accounts',
-    'profil_account'
+    'profil_account',
+    'locate_station'
 
 ]
 

@@ -8,6 +8,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
 
     path('profil_account/', include('profil_account.urls')),
+    path('locate_station/', include('locate_station.urls')),
 
 ]
 
