@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'stations',
-    'accounts'
+    'accounts',
+    'locate_station'
 ]
 STATIC_URL = '/static/'
 

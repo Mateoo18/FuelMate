@@ -130,7 +130,7 @@ def logged_in_view(request):
     all_stations = list(GasStation.objects.all())
     recommended_stations = random.sample(all_stations, min(len(all_stations), 5))
 
-    return render(request, 'accounts/zalogowany.html', {
+    return render(request, 'accounts/../locate_station/templates/zalogowany.html', {
         'stations': stations,
         'postal_code': postal_code,
         'recommended_stations': recommended_stations,  # Polecane stacje
