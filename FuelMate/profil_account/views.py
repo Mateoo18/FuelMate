@@ -10,10 +10,12 @@ from stations.views import favorite_station_list
 def profile(request):
 
     user = request.user
+    print(user.id)
 
     try:
         user_info = Users.objects.get(UserId=user.id)
     except Users.DoesNotExist:
+        print("chuja")
         user_info = None
 
     favorite_station_list = []

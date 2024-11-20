@@ -11,7 +11,8 @@ from stations.models import Users, Favorite_Station, Gas_Stations
 
 @login_required
 def logged_in_view(request):
-    return render(request, 'accounts/zalogowany.html')
+    return redirect(reverse_lazy('profil_account:profile'))
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -30,12 +31,4 @@ class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
 
     def get_success_url(self):
-        return reverse_lazy('stations:index')  # Redirect to stations app after login
-
-
-
-
-
-
-
-
+        return reverse_lazy('profil_account:profile')  # Redirect to stations app after login
