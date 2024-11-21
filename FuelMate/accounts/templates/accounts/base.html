@@ -19,7 +19,16 @@
         <h1>FuelMate</h1>
 
         <!-- Przycisk wylogowania w prawym górnym rogu -->
-
+        <div class="logout-button">
+            {% if request.user.is_authenticated %}
+                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light">Wyloguj się</button>
+                </form>
+            {% else %}
+                <p class="text-white">Nie jesteś zalogowany</p>
+            {% endif %}
+        </div>
     </header>
 
     <main class="container mt-5">
