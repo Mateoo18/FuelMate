@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Stacji Paliw</title>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css">
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mapa Stacji Paliw</h1>
+
+    <div id="map"></div>
+
+    <script>
+        const apiKey = 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD';
+
+        // Inicjalizacja mapy
+        const map = tt.map({
+            key: apiKey,
+            container: 'map',
+            center: [19.945, 50.064], // Współrzędne Krakowa
+            zoom: 12
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        // Pobieranie danych stacji paliw z API Django
+        async function fetchGasStations() {
+            try {
+                const response = await fetch('/maps/api/gas_stations/');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error("Błąd podczas pobierania danych stacji paliw:", error);
+                return [];
+            }
+        }
+
+        // Dodanie markerów na mapę
+        async function addGasStationMarkers() {
+            const stations = await fetchGasStations();
+            if (!stations.length) {
+                console.warn("Brak stacji paliw do wyświetlenia.");
+                return;
+            }
+
+            stations.forEach(station => {
+                const marker = new tt.Marker()
+                    .setLngLat([station.Longitude, station.Latitude]) // Dodanie markerów
+                    .addTo(map);
+
+                const popup = new tt.Popup({ offset: 35 })
+                    .setHTML(`<strong>${station.Name}</strong><br>
+                              ${station.Address}, ${station.City}<br>
+                              Kod pocztowy: ${station.Zip}<br>
+                              Telefon: ${station.Phone}`);
+                marker.setPopup(popup);
+            });
+        }
+
+        // Inicjalizacja markerów
+        addGasStationMarkers();
+    </script>
+</body>
+</html>
