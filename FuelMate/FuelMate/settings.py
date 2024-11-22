@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'accounts',
     'profil_account',
     'locate_station',
-    'add_prices'
+    'add_prices',
+    'maps'
 
 ]
 
