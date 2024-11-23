@@ -1,14 +1,17 @@
 # accounts/views.py
 import random
-from django.db import connection
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import login
-from django.urls import reverse_lazy, reverse
-from .models import GasStation, PostalCode
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 
+import requests
+from django.db import connection
+from .models import GasStation, PostalCode
+import os
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, sqrt, atan2
+from django.shortcuts import render
+
+API_KEY = os.getenv("API_KEY_TOMTOM")
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Promień Ziemi w kilometrach
@@ -20,26 +23,95 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     distance = R * c
     return distance
 
-# accounts/views.py
-from django.contrib.auth.views import LoginView
+def calcuate_stations_score(stations, time_in_minutes, distance,max_distance=1000, min_price=4.2, max_price=6.5,max_time=1000,):
+    if distance is None:
+        distance = 0  # Możesz ustawić domyślną wartość, np. 0 km
+
+    if time_in_minutes is None:
+        time_in_minutes = 0
+
+    fuel_price = random.uniform(min_price, max_price)
+
+    distance_score = max(0.0, min(5.0, 5.0 - (distance / max_distance) * 5))  # im mniejsza odległość, tym wyższa ocena
+
+    # Normalizujemy czas przejazdu (mniej minut to lepsza stacja)
+    time_score = max(0.0, min(5.0, 5.0 - (time_in_minutes / max_time) * 5))  # im mniej minut, tym wyższa ocena
+
+    # Normalizujemy cenę paliwa (niższa cena to lepsza stacja)
+    price_score = max(0.0, min(5.0, 5.0 - (
+                (fuel_price - min_price) / (max_price - min_price)) * 5))  # im tańsze paliwo, tym wyższa ocena
+
+    # Wagi dla każdego kryterium
+    distance_weight = 0.05
+    time_weight = 0.5
+    price_weight = 0.5
+
+    score = (distance_score * distance_weight) + (time_score * time_weight) + (price_score * price_weight)
+    return score
 
 
-from django.shortcuts import render
+def time_to_drive_tomtom(start_lat, start_lon, end_lat, end_lon):
+    """Funkcja do obliczania czasu podróży i odległości za pomocą API TomTom"""
+    url = f'https://api.tomtom.com/routing/1/calculateRoute/{start_lat},{start_lon}%3A{end_lat},{end_lon}/json?language=pl-PL&computeBestOrder=true&key={API_KEY}'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Sprawdzamy, czy odpowiedź jest poprawna
+        data = response.json()
+        sleep(0.3)
+
+        # Sprawdzamy, czy odpowiedź zawiera dane
+        if 'routes' in data and len(data['routes']) > 0:
+            route = data['routes'][0]['summary']
+            length_in_meters = route.get('lengthInMeters', 0)
+            travel_time_in_seconds = route.get('travelTimeInSeconds', 0)
+
+            if 'trafficDelayInSeconds' in route:
+                travel_time_in_seconds += route['trafficDelayInSeconds']
+
+            if length_in_meters is not None or travel_time_in_seconds is not None:
+                 return travel_time_in_seconds, length_in_meters
+
+
+
+
+    except requests.exceptions.RequestException as e:
+        print(f'Błąd połączenia z API TomTom: {e}')
+
+    # Jeśli wystąpił błąd, zwracamy None, None
+    return None, None
+
+def list_returned_stations(station, latitude, longitude):
+    station_obj = station
+    travel_time, distance = time_to_drive_tomtom(latitude, longitude, station_obj.latitude,
+                                                                        station_obj.longitude)
+    if travel_time is None or distance is None:
+        print(f'Nie udało się obliczyć czasu podróży dla stacji {station_obj.name}')
+    else :
+        print(f'{station_obj.name}: {travel_time} sekund, {distance} metrów')
+        return travel_time, distance
+
+
 
 def search_stations_by_postal_code(request):
     postal_code = request.GET.get('postal_code', '').strip()
     stations = GasStation.objects.filter(address__icontains=postal_code)
     return render(request, 'search.html', {'stations': stations, 'postal_code': postal_code})
+
 def all_stations_view(request):
     stations = GasStation.objects.all()
     return render(request, 'search.html', {'stations': stations})
+
+
 @login_required
 def logged_in_view(request):
     stations = []
     postal_code = request.GET.get('postal_code', '').strip()
-    latitude = request.GET.get('latitude')  # Szerokość geograficzna użytkownika
+    latitude = request.GET.get('latitude')# Szerokość geograficzna użytkownika
     longitude = request.GET.get('longitude')  # Długość geograficzna użytkownika
     nearby_stations = []
+    recommended_stations = []
+    recommended_stations_re = []
 
     # Obsługa wyszukiwania po kodzie pocztowym
     if postal_code:
@@ -75,18 +147,27 @@ def logged_in_view(request):
         for station in all_stations:
             if station.latitude and station.longitude:
                 distance = calculate_distance(latitude, longitude, station.latitude, station.longitude)
+                  # Symulacja opóźnienia
                 nearby_stations.append((station, distance))
 
         # Posortuj według odległości
+        recommended_stations = sorted(nearby_stations, key=lambda x: x[1])[:5]
         nearby_stations = sorted(nearby_stations, key=lambda x: x[1])[:5]  # Max 5 najbliższych
+        print(recommended_stations)
 
-    # Pobierz polecane stacje (losowe 5)
-    all_stations = list(GasStation.objects.all())
-    recommended_stations = random.sample(all_stations, min(len(all_stations), 5))
+        for station in recommended_stations:
+            travel_time,distance = list_returned_stations(station[0], latitude, longitude)
+            score = calcuate_stations_score(station[0], travel_time/60, distance)
+            recommended_stations_re.append((station[0], round(travel_time/60), round(distance/1000,2),round(score,2)))
+        print(recommended_stations_re)
+
+
+
+
 
     return render(request, 'search.html', {
         'stations': stations,
         'postal_code': postal_code,
-        'recommended_stations': recommended_stations,  # Polecane stacje
+        'recommended_stations': sorted(recommended_stations_re, key=lambda x: x[3], reverse=True),  # Rekomendowane stacje
         'nearby_stations': [station[0] for station in nearby_stations],  # Najbliższe stacje
     })

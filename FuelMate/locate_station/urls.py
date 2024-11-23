@@ -5,4 +5,6 @@ app_name = 'locate_station'
 
 urlpatterns = [
     path('search/', views.logged_in_view, name='search'),
+
+
 ]

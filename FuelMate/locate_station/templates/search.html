@@ -8,11 +8,13 @@
 
     <!-- Sekcja wyszukiwania -->
     <section class="mt-4">
-        <h3>Wyszukaj stacje paliw lub zlokalizuj mnie:</h3>
+        <h3>Wyszukaj stację paliw lub zlokalizuj mnie:</h3>
         <form method="get" action="" class="row g-2 align-items-center mb-4">
             {% csrf_token %}
             <div class="col-auto flex-grow-1">
-                <input type="text" name="postal_code" placeholder="Wprowadź kod pocztowy" value="{{ postal_code }}" class="form-control">
+                <!-- Pole wyszukiwania z autouzupełnianiem -->
+                <input type="text" id="search-input" name="search" placeholder="Wprowadź nazwę stacji paliw" class="form-control" value="{{ request.GET.search }}" oninput="getSuggestions()">
+                <div id="autocomplete-results" style="display: none;"></div> <!-- Lista wyników -->
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Szukaj</button>
@@ -57,15 +59,19 @@
                 <tr>
                     <th>Nazwa</th>
                     <th>Adres</th>
-                    <th>Telefon</th>
+                    <th>Odległość</th>
+                    <th>Czas dojazdu</th>
+                    <th>Główna Ocena</th>
                 </tr>
             </thead>
             <tbody>
                 {% for station in recommended_stations %}
                     <tr>
-                        <td>{{ station.name }}</td>
-                        <td>{{ station.address }}</td>
-                        <td>{{ station.phone|default:"Brak telefonu" }}</td>
+                        <td>{{ station.0.name  }}</td>
+                        <td>{{ station.0.address  }}</td>
+                        <td>{{ station.2 }} km</td>  <!-- Zaokrąglona odległość do 2 miejsc po przecinku -->
+                        <td>{{ station.1 }} min</td>
+                        <td>{{ station.3 }} /5</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -77,18 +83,89 @@
 </div>
 
 <script>
+    const apiKey = "################";  // Zastąp swoim kluczem API TomTom
+    const searchInput = document.getElementById('search-input');
+    const resultsDiv = document.getElementById('autocomplete-results');
+    let userLatitude = null;
+    let userLongitude = null;
+
+
+    async function getSuggestions() {
+        const query = searchInput.value;
+
+
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        try {
+            const url = new URL('https://api.tomtom.com/search/2/search/' + encodeURIComponent(query) + '.json');
+            url.searchParams.set('key', apiKey);
+            url.searchParams.set('typeahead', 'true');
+            url.searchParams.set('countrySet', 'PL');
+            url.searchParams.set('limit', '5');
+            url.searchParams.set('language', 'pl-PL');
+
+            // Dodaj współrzędne użytkownika do zapytania, jeśli są dostępne
+            if (userLatitude && userLongitude) {
+                url.searchParams.set('lat', userLatitude);
+                url.searchParams.set('lon', userLongitude);
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Błąd odpowiedzi API: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+
+            if (data.results.length > 0) {
+                resultsDiv.innerHTML = '';
+                data.results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.classList.add('autocomplete-item');
+                    item.textContent = result.poi ? result.poi.name : result.address.freeformAddress;
+                    item.onclick = () => selectSuggestion(result, query);
+                    resultsDiv.appendChild(item);
+                });
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Błąd podczas pobierania danych z API:', error);
+            resultsDiv.style.display = 'none';
+        }
+    }
+
+
+    function selectSuggestion(result, originalQuery) {
+        // Zamiana adresu na współrzędne
+        const latitude = result.position.lat;
+        const longitude = result.position.lon;
+
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('latitude', latitude);
+        url.searchParams.set('longitude', longitude);
+        url.searchParams.set('search', originalQuery);
+        window.location.href = url.toString();
+    }
+
     // Funkcja do lokalizacji użytkownika
     function locateMe() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+                userLatitude = position.coords.latitude;
+                userLongitude = position.coords.longitude;
 
-                // Przekierowanie z parametrami współrzędnych
+
                 const url = new URL(window.location.href);
-                url.searchParams.delete('postal_code'); // Usuń parametr kodu pocztowego
-                url.searchParams.set('latitude', latitude);
-                url.searchParams.set('longitude', longitude);
+                url.searchParams.delete('postal_code');
+                url.searchParams.set('latitude', userLatitude);
+                url.searchParams.set('longitude', userLongitude);
                 window.location.href = url.toString();
             }, function (error) {
                 alert("Nie udało się pobrać lokalizacji. Upewnij się, że geolokalizacja jest włączona.");
@@ -97,5 +174,12 @@
             alert("Twoja przeglądarka nie obsługuje geolokalizacji.");
         }
     }
+
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('#search-input') && !event.target.closest('#autocomplete-results')) {
+            resultsDiv.style.display = 'none';
+        }
+    });
 </script>
 {% endblock %}
