@@ -29,8 +29,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+load_dotenv()
+API_KEY_TOM = os.getenv('API_KEY_TOMTOM')
 # Application definition
 
 INSTALLED_APPS = [
