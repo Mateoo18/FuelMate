@@ -145,7 +145,7 @@ def report_complain(request, station_id):
         complain_text = request.POST.get("complain_text")
         if not complain_text:
             messages.warning(request, "Treść zażalenia nie może być pusta.")
-            return redirect('add_prices:station_details', station_id=station_id)
+            return redirect('add_prices:station_details',  id_stations=station_id)
 
         # Zapisanie zażalenia w bazie danych
         Complain.objects.create(
@@ -155,4 +155,4 @@ def report_complain(request, station_id):
         )
 
         messages.success(request, "Zażalenie zostało zgłoszone.")
-        return redirect('add_prices:station_details', station_id=station_id)
+        return redirect('add_prices:nearest_stations')

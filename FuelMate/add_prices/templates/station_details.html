@@ -10,6 +10,10 @@
     <h1>{{ station.name }}</h1>
     <p><strong>Adres:</strong> {{ station.address }}</p>
 
+    <!-- Mapa stacji paliw -->
+    <h2>Lokalizacja stacji na mapie</h2>
+    <div id="map"></div>
+
     <!-- Formularz aktualizacji cen paliw -->
     <h2>Ceny paliw</h2>
     <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id_stations %}">
@@ -30,13 +34,54 @@
         </table>
         <button type="submit">Zaktualizuj ceny</button>
     </form>
- <!-- Sekcja zgłaszania zażaleń -->
+
+    <!-- Sekcja zgłaszania zażaleń -->
     <h2>Zgłoś zażalenie</h2>
     <form method="post" action="{% url 'add_prices:report_complain' station_id=station.id_stations %}">
         {% csrf_token %}
         <textarea name="complain_text" rows="4" cols="50" placeholder="Wpisz swoje zażalenie tutaj..."></textarea><br>
         <button type="submit">Wyślij zażalenie</button>
     </form>
+
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css">
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+    </style>
+
+    <script>
+        // Klucz API TomTom
+        const apiKey = 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD';
+
+        // Inicjalizacja mapy z lokalizacją stacji
+        const map = tt.map({
+            key: apiKey,
+            container: 'map',
+            center: [{{ station.longitude }}, {{ station.latitude }}], // Współrzędne stacji paliw
+            zoom: 14
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        // Dodanie markera dla bieżącej stacji
+        const marker = new tt.Marker()
+            .setLngLat([{{ station.longitude }}, {{ station.latitude }}])
+            .addTo(map);
+
+        const popup = new tt.Popup({ offset: 35 })
+            .setHTML(`<strong>{{ station.name }}</strong><br>
+                      {{ station.address }}<br>
+                      Miasto: {{ station.city }}<br>
+                      Kod pocztowy: {{ station.postal_code }}<br>
+                      Telefon: {{ station.phone }}`);
+        marker.setPopup(popup);
+        marker.togglePopup();
+    </script>
 
     <script>
         // Obsługa powiadomień z Django
