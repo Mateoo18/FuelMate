@@ -30,6 +30,13 @@
         </table>
         <button type="submit">Zaktualizuj ceny</button>
     </form>
+ <!-- Sekcja zgłaszania zażaleń -->
+    <h2>Zgłoś zażalenie</h2>
+    <form method="post" action="{% url 'add_prices:report_complain' station_id=station.id_stations %}">
+        {% csrf_token %}
+        <textarea name="complain_text" rows="4" cols="50" placeholder="Wpisz swoje zażalenie tutaj..."></textarea><br>
+        <button type="submit">Wyślij zażalenie</button>
+    </form>
 
     <script>
         // Obsługa powiadomień z Django

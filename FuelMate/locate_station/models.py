@@ -2,10 +2,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-
-
-
 class GasStation(models.Model):
     id_stations = models.AutoField(primary_key=True)  # Klucz główny
     name = models.CharField(max_length=255)
