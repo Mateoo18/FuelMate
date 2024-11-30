@@ -1,18 +1,24 @@
 {% extends "accounts/base.html" %}
 
 {% block title %}Aktualizacja cen paliw{% endblock %}
-
+{% load static %}
 {% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktualizacja cen paliw</title>
+
+    <!-- Link do pliku CSS -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
     <!-- Powiadomienia -->
     <div id="notifications"></div>
 
     <!-- Nagłówek stacji paliw -->
     <h1>{{ station.name }}</h1>
     <p><strong>Adres:</strong> {{ station.address }}</p>
-
-    <!-- Mapa stacji paliw -->
-    <h2>Lokalizacja stacji na mapie</h2>
-    <div id="map"></div>
 
     <!-- Formularz aktualizacji cen paliw -->
     <h2>Ceny paliw</h2>
@@ -43,26 +49,29 @@
         <button type="submit">Wyślij zażalenie</button>
     </form>
 
+    <!-- Mapa stacji paliw na dole strony -->
+    <h2>Lokalizacja stacji na mapie</h2>
+    <div id="map" style="width: 100%; height: 500px;"></div>
+
+    <!-- Linki do plików JS i CSS -->
     <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
-    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css">
-    <style>
-        #map {
-            width: 100%;
-            height: 500px;
-            margin: 20px auto;
-            border: 1px solid #ddd;
-        }
-    </style>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css"> <!-- Dodano plik CSS TomTom -->
 
     <script>
-        // Klucz API TomTom
-        const apiKey = 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD';
+        // Przekazywanie zmiennych z Django do JS
+        const stationLongitude = {{ station.longitude }};
+        const stationLatitude = {{ station.latitude }};
+        const stationName = "{{ station.name|escapejs }}";
+        const stationAddress = "{{ station.address|escapejs }}";
+        const stationCity = "{{ station.city|escapejs }}";
+        const stationPostalCode = "{{ station.postal_code|escapejs }}";
+        const stationPhone = "{{ station.phone|escapejs }}";
 
         // Inicjalizacja mapy z lokalizacją stacji
         const map = tt.map({
-            key: apiKey,
+            key: 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD',
             container: 'map',
-            center: [{{ station.longitude }}, {{ station.latitude }}], // Współrzędne stacji paliw
+            center: [stationLongitude, stationLatitude], // Współrzędne stacji paliw
             zoom: 14
         });
 
@@ -70,15 +79,15 @@
 
         // Dodanie markera dla bieżącej stacji
         const marker = new tt.Marker()
-            .setLngLat([{{ station.longitude }}, {{ station.latitude }}])
+            .setLngLat([stationLongitude, stationLatitude])
             .addTo(map);
 
         const popup = new tt.Popup({ offset: 35 })
-            .setHTML(`<strong>{{ station.name }}</strong><br>
-                      {{ station.address }}<br>
-                      Miasto: {{ station.city }}<br>
-                      Kod pocztowy: {{ station.postal_code }}<br>
-                      Telefon: {{ station.phone }}`);
+            .setHTML(`<strong>${stationName}</strong><br>
+                      ${stationAddress}<br>
+                      Miasto: ${stationCity}<br>
+                      Kod pocztowy: ${stationPostalCode}<br>
+                      Telefon: ${stationPhone}`);
         marker.setPopup(popup);
         marker.togglePopup();
     </script>
