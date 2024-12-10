@@ -1,9 +1,12 @@
-from django.contrib.auth import login
-from django.shortcuts import render
+
 from .models import Fuel, Gas_Stations, Roles, Users, Notifications, Report, Station_Rev, Promotion, Favorite_Station, \
     Price_history, Station_Fuel
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import OuterRef, Subquery
+from .models import Gas_Stations, Station_Fuel, Fuel
+import random
+from django.shortcuts import render
 @login_required
 def fuel_list(request):
     fuels = Fuel.objects.all()

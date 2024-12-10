@@ -1,26 +1,206 @@
-<!-- File: stations/templates/default_page.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuelMate</title>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .navbar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8); /* Czarny, lekko przezroczysty */
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 2;
+            max-width: 80%;
+        }
+        .navbar .navbar-brand {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar .navbar-brand:hover {
+            color: #d4d4d4;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            font-size: 1rem;
+            margin-right: 15px;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #d4d4d4;
+        }
+        .recommended-table-container {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            z-index: 3;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto; /* Dodano przewijanie */
+        }
+        .recommended-table-container h4 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .table {
+            font-size: 0.9rem;
+        }
+        .locate-station-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            padding: 15px 30px;
+            background-color: #000000; /* Czarny kolor */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+        .locate-station-btn:hover {
+            background-color: #333333; /* Lekko jaśniejszy czarny na hover */
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to FuelMate</h1>
-    <a href="{% url 'fuel_list' %}">Go to Fuel List</a>
-    <a href="{% url 'gas_station_list' %}">Go to Gas Station</a>
-    <a href="{% url 'role_list' %}">Go to Role list</a>
-    <a href="{% url 'user_list' %}">Go to User list</a>
-    <a href="{% url 'notification_list' %}">Go to Notification list</a>
-    <a href="{% url 'report_list' %}">Go to Report list</a>
-    <a href="{% url 'station_rev_list' %}">Go to Station Review list</a>
-    <a href="{% url 'promotion_list' %}">Go to Promotion list</a>
-    <a href="{% url 'favorite_station_list' %}">Go to User Promotion list</a>
-    <a href="{% url 'price_history_list' %}">Go to Price History list</a>
-    <a href="{% url 'station_fuel_list' %}">Go to Fuel Type list</a>
-    <a href="{% url 'accounts:register' %}">Go to LOGIN</a>
+    <!-- Mapa -->
+    <div id="map"></div>
 
+    <!-- Pasek nawigacji -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">FuelMate</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'fuel_list' %}">Fuel List</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'gas_station_list' %}">Gas Station</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'notification_list' %}">Notifications</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:profile' %}">Profile</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Please log in</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Polecane stacje -->
+    <div class="recommended-table-container">
+        <h4>Polecane stacje paliw:</h4>
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Adres</th>
+                    <th>Paliwo</th>
+                    <th>Cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for station in recommended_stations %}
+                    <tr>
+                        <td>{{ station.station_name }}</td>
+                        <td>{{ station.station_address }}</td>
+                        <td>{{ station.fuel_name }}</td>
+                        <td>{{ station.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
+    <!-- Przycisk do lokalizacji stacji -->
+    <a href="{% url 'locate_station:search' %}" class="locate-station-btn">Find a Station</a>
 
+    <!-- Skrypt mapy -->
+    <script>
+        const apiKey = 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD';
+
+        const map = tt.map({
+            key: apiKey,
+            container: 'map',
+            center: [19.945, 50.064],
+            zoom: 12
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        async function fetchGasStations() {
+            try {
+                const response = await fetch('/maps/api/gas_stations/');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error("Error fetching gas station data:", error);
+                return [];
+            }
+        }
+
+        async function addGasStationMarkers() {
+            const stations = await fetchGasStations();
+            if (!stations.length) {
+                console.warn("No gas stations available to display.");
+                return;
+            }
+
+            stations.forEach(station => {
+                const marker = new tt.Marker()
+                    .setLngLat([station.Longitude, station.Latitude])
+                    .addTo(map);
+
+                const popup = new tt.Popup({ offset: 35 })
+                    .setHTML(`<strong>${station.Name}</strong><br>${station.Address}, ${station.City}<br>Postcode: ${station.Zip}<br>Phone: ${station.Phone}`);
+                marker.setPopup(popup);
+            });
+        }
+
+        addGasStationMarkers();
+    </script>
 </body>
 </html>
