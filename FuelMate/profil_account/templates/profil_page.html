@@ -24,6 +24,10 @@
             <li class="nav-item" role="presentation">
                 <a class="nav-link" id="people-ranking-tab" data-bs-toggle="tab" href="#people-ranking" role="tab" aria-controls="people-ranking" aria-selected="false">Ranking</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="price_history-tab" data-bs-toggle="tab" href="#price_history" role="tab" aria-controls="price_history" aria-selected="false">Ceny Historyczne</a>
+            </li>
+
         </ul>
 
         <div class="tab-content mt-3" id="myTabContent">
@@ -83,6 +87,12 @@
                 <p>Na tej zakładce możesz sprawdzić Ranking osób zgłaszających ceny paliw.</p>
                 <!-- Link do widoku, który pozwala dodać cenę -->
                 <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
+            </div>
+            <div class="tab-pane fade" id="price_history" role="tabpanel" aria-labelledby="price_history-tab">
+                <h2>Ceny Historyczne:</h2>
+                <p>Tu możesz sprawdzić ceny historyczne stacji paliw.</p>
+
+                <a href="{% url 'price_history:list_price' %}">Historia</a>
             </div>
         </div>
     </div>

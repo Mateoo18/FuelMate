@@ -54,7 +54,7 @@ class Points(models.Model):
 
 class PriceHistory(models.Model):
     price_history_id = models.BigAutoField(db_column='Price_History_Id', primary_key=True)
-    station = models.ForeignKey(Gas_Stations, db_column='id_stations', on_delete=models.SET_NULL, null=True)
+    station = models.ForeignKey(Gas_Stations, db_column='Station_Id', on_delete=models.SET_NULL, null=True)
     fuel = models.ForeignKey(Fuel, db_column='Fuel_Id', on_delete=models.SET_NULL, null=True)
     price = models.FloatField(db_column='Price')
     change_date = models.DateTimeField(db_column='Change_Date')

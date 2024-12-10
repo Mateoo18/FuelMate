@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.mail import send_mail
+from django.utils import timezone
 API_KEY = os.getenv("API_KEY_GOOGLE")
 
 
@@ -113,6 +114,12 @@ def update_prices(request, station_id):
                             Update_Date=timezone.now(),
                             user=request.user
                         )
+                    PriceHistory.objects.create(
+                        station=station,
+                        fuel=fuel,
+                        price=new_price,
+                        change_date=timezone.now()
+                    )
                 except ValueError:
                     messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
                     return redirect('add_prices:update_prices', station_id=station_id)
