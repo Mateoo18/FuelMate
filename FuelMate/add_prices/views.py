@@ -12,6 +12,7 @@ from .models import Gas_Stations, Fuel, StationFuel, PriceHistory, Points,Compla
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import get_messages
+from django.core.mail import send_mail
 API_KEY = os.getenv("API_KEY_GOOGLE")
 
 
@@ -139,6 +140,18 @@ def update_prices(request, station_id):
 
 @login_required
 def report_complain(request, station_id):
+    subject = f"Gratulacje! Zająłeś 1 miejsce"
+    message = f"Gratulacje! Zdobyłeś 1 miejsce w rankingu tygodniowym. Nagroda: 1 zł."
+    from_email = "mateusz.nowak.076@gmail.com"
+    email="mateusz.nowak.203@gmail.com"
+    try:
+        send_mail(subject, message, from_email, email, fail_silently=False)
+        print(f"E-mail wysłany do {email}")
+    except Exception as e:
+        print(f"Błąd wysyłania e-maila do {email}: {e}")
+
+
+
     station = get_object_or_404(Gas_Stations, id_stations=station_id)
 
     if request.method == "POST":

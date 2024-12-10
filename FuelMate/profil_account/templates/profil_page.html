@@ -21,6 +21,9 @@
             <li class="nav-item" role="presentation">
                 <a class="nav-link" id="add-price-tab" data-bs-toggle="tab" href="#add-price" role="tab" aria-controls="add-price" aria-selected="false">Dodaj Ceny</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="people-ranking-tab" data-bs-toggle="tab" href="#people-ranking" role="tab" aria-controls="people-ranking" aria-selected="false">Ranking</a>
+            </li>
         </ul>
 
         <div class="tab-content mt-3" id="myTabContent">
@@ -74,6 +77,12 @@
                 <p>Na tej zakładce możesz dodać ceny paliw dla stacji.</p>
                 <!-- Link do widoku, który pozwala dodać cenę -->
                 <a href="{% url 'add_prices:nearest_stations' %}">Dodaj cenę paliwa</a>
+            </div>
+            <div class="tab-pane fade" id="people-ranking" role="tabpanel" aria-labelledby="people-ranking-tab">
+                <h2>Ranking:</h2>
+                <p>Na tej zakładce możesz sprawdzić Ranking osób zgłaszających ceny paliw.</p>
+                <!-- Link do widoku, który pozwala dodać cenę -->
+                <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
             </div>
         </div>
     </div>

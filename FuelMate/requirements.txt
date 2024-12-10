@@ -4,3 +4,4 @@ django-environ
 requests
 python-dotenv
 googlemaps
+apscheduler

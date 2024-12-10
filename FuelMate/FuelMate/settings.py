@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'accounts',
     'profil_account',
     'locate_station',
-    'add_prices'
+    'add_prices',
+    'ranking',
+    'django_cron'
 
 ]
 
@@ -140,4 +142,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'accounts:logged_in'
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Możesz użyć innego serwera SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'  # Twój adres e-mail
+EMAIL_HOST_PASSWORD = 'your-email-password'  # Hasło do e-maila
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Adres e-mail, z którego będą wysyłane wiadomości
 
