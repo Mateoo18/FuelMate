@@ -6,14 +6,13 @@ from time import sleep
 import requests
 from django.db import connection
 
-from FuelMate.settings import API_KEY_TOM
 from .models import GasStation, PostalCode
 import os
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, sqrt, atan2
 from django.shortcuts import render
 
-API_KEY = os.getenv("API_KEY_TOMTOM")
+API_KEY = os.getenv("API_KEY_TOM_TOM")
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Promień Ziemi w kilometrach
@@ -172,12 +171,12 @@ def logged_in_view(request):
         'postal_code': postal_code,
         'recommended_stations': sorted(recommended_stations_re, key=lambda x: x[3], reverse=True),  # Rekomendowane stacje
         'nearby_stations': [station[0] for station in nearby_stations],  # Najbliższe stacje
-        'api_key': API_KEY_TOM
+        'API_KEY_TOM_TOM':os.getenv('API_KEY_TOM_TOM'),
     })
 
 
 def get_stations_from_tomtom(query, user_latitude=None, user_longitude=None):
-    api_key = os.getenv("GEFJGFwsJTFCL8APYN0w48ks3eweIIAk")  # Użyj zmiennej środowiskowej lub klucza w ustawieniach
+    api_key = os.getenv("API_KEY_TOM_TOM")  # Użyj zmiennej środowiskowej lub klucza w ustawieniach
     url = f"https://api.tomtom.com/search/2/search/{query}.json"
     params = {
         'key': api_key,
@@ -229,4 +228,4 @@ def search_stations(request):
 
 def some_view(request):
     # Przekazanie API_KEY do szablonu HTML
-    return render(request, 'search.html', {'api_key': API_KEY_TOM})
+    return render(request, 'search.html', {'API_KEY_TOM_TOM':os.getenv('API_KEY_TOM_TOM')})
