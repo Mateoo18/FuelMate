@@ -66,10 +66,10 @@
         const stationCity = "{{ station.city|escapejs }}";
         const stationPostalCode = "{{ station.postal_code|escapejs }}";
         const stationPhone = "{{ station.phone|escapejs }}";
-        const apiKey = "{{ API_KEY_TOM_TOM }}";
+
         // Inicjalizacja mapy z lokalizacją stacji
         const map = tt.map({
-            key: apiKey,
+            key: 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD',
             container: 'map',
             center: [stationLongitude, stationLatitude], // Współrzędne stacji paliw
             zoom: 14
@@ -108,4 +108,5 @@
             setTimeout(() => div.remove(), 5000);
         });
     </script>
+    <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary">Wróć do Profilu</a>
 {% endblock %}
