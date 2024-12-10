@@ -10,6 +10,7 @@ urlpatterns = [
     path('profil_account/', include('profil_account.urls')),
     path('locate_station/', include('locate_station.urls')),
     path('add_prices/', include('add_prices.urls')),
+    path('price_history/', include('price_history.urls')),
 
 ]
 

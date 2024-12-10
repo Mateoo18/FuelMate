@@ -106,8 +106,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
-{#                        <li class="nav-item"><a class="nav-link" href="{% url '' %}">Dodaj Cene Paliwa</a></li>#}
-{#                        <li class="nav-item"><a class="nav-link" href="{% url '' %}">Sprawdz Ceny Historyczne</a></li>#}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'add_prices:nearest_stations' %}">Dodaj Cene Paliwa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'price_history:list_price' %}">Sprawdz Ceny Historyczne</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:profile' %}">Profile</a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Please log in</a></li>
