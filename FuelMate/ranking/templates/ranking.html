@@ -1,0 +1,32 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Ranking Tygodniowy{% endblock %}
+{% load static %}
+{% block content %}
+    <h1>Ranking Tygodniowy</h1>
+
+    <link rel="stylesheet"  href="{% static 'style.css' %}">
+
+    {% if ranking %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Miejsce</th>
+                    <th>Użytkownik</th>
+                    <th>Punkty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rank in ranking %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="rank-item">{{ rank.user__username }}</td>
+                        <td>{{ rank.total_points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Brak wyników w tym tygodniu.</p>
+    {% endif %}
+{% endblock %}
