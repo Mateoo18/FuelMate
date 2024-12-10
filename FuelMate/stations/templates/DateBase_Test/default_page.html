@@ -106,18 +106,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'fuel_list' %}">Fuel List</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'gas_station_list' %}">Gas Station</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'notification_list' %}">Notifications</a></li>
+{#                        <li class="nav-item"><a class="nav-link" href="{% url '' %}">Dodaj Cene Paliwa</a></li>#}
+{#                        <li class="nav-item"><a class="nav-link" href="{% url '' %}">Sprawdz Ceny Historyczne</a></li>#}
                         <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:profile' %}">Profile</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Please log in</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Please log in</a></li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm">Logout</button>
                             </form>
@@ -154,7 +153,7 @@
     </div>
 
     <!-- Przycisk do lokalizacji stacji -->
-    <a href="{% url 'locate_station:search' %}" class="locate-station-btn">Find a Station</a>
+    <a href="{% url 'locate_station:search' %}" class="locate-station-btn">Wyszukaj Najbliższe stacje</a>
 
     <!-- Skrypt mapy -->
     <script>

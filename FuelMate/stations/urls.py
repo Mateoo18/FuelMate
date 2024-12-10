@@ -4,6 +4,8 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 
+app_name = 'statrions'
+
 urlpatterns = [
     path('fuel/', views.fuel_list, name='fuel_list'),
     path('', views.home, name='home'),

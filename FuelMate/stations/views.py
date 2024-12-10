@@ -55,3 +55,7 @@ def price_history_list(request):
 def station_fuel_list(request):
     station_fuels = Station_Fuel.objects.all()
     return render(request, 'DateBase_Test/station_fuel_list.html', {'station_fuels': station_fuels})
+
+@login_required
+def DataBase_Test(request):
+    return render(request, 'D')

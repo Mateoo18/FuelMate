@@ -12,7 +12,7 @@ from stations.models import Users, Favorite_Station, Gas_Stations
 
 @login_required
 def logged_in_view(request):
-    return redirect(reverse_lazy('profil_account:profile'))
+    return redirect(reverse_lazy('statrions:home'))
 
 
 def register_view(request):
