@@ -62,3 +62,14 @@ class PriceHistory(models.Model):
     class Meta:
         managed = False
         db_table = 'Price_History'
+
+class Complain(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    station = models.ForeignKey('Gas_Stations',db_column='id_stations', on_delete=models.CASCADE)
+    text = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'complain'

@@ -8,10 +8,11 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from django.utils import timezone
-from .models import Gas_Stations, Fuel, StationFuel, PriceHistory, Points
+from .models import Gas_Stations, Fuel, StationFuel, PriceHistory, Points,Complain
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import get_messages
+from django.core.mail import send_mail
 API_KEY = os.getenv("API_KEY_GOOGLE")
 
 
@@ -132,6 +133,28 @@ def update_prices(request, station_id):
     context = {
         'station': station,
         'fuels': fuels,
-        'serialized_messages': serialized_messages  # Dodaj serializowane komunikaty
+        'serialized_messages': serialized_messages,  # Dodaj serializowane komunikaty
+        'API_KEY_TOM_TOM':os.getenv('API_KEY_TOM_TOM'),
     }
     return render(request, 'station_details.html', context)
+
+
+@login_required
+def report_complain(request, station_id):
+    station = get_object_or_404(Gas_Stations, id_stations=station_id)
+
+    if request.method == "POST":
+        complain_text = request.POST.get("complain_text")
+        if not complain_text:
+            messages.warning(request, "Treść zażalenia nie może być pusta.")
+            return redirect('add_prices:station_details',  id_stations=station_id)
+
+        # Zapisanie zażalenia w bazie danych
+        Complain.objects.create(
+            user=request.user,
+            station=station,
+            text=complain_text
+        )
+
+        messages.success(request, "Zażalenie zostało zgłoszone.")
+        return redirect('add_prices:nearest_stations')
