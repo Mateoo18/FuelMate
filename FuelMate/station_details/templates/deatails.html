@@ -16,6 +16,17 @@
                 <li class="list-group-item"><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</li>
                 <li class="list-group-item"><strong>Kod Pocztowy:</strong> {{ station.Zip }}</li>
             </ul>
+            <h1 class="display-4 mb-4">
+                Szczegóły Stacji: {{ station.Name }}
+                <!-- Ikona serduszka dla ulubionych -->
+                <a href="#" id="favorite-button" data-station-id="{{ station.id }}">
+                    {% if is_favorite %}
+                        <i class="fas fa-heart" style="color: red;"></i>  <!-- Pełne serce -->
+                    {% else %}
+                        <i class="far fa-heart" style="color: red;"></i>  <!-- Puste serce -->
+                    {% endif %}
+                </a>
+            </h1>
 
             <!-- Sekcja z aktualnymi cenami -->
             <h2 class="mt-4">Aktualne Ceny Paliw</h2>
@@ -163,4 +174,5 @@
     });
 
 </script>
+
 {% endblock %}
