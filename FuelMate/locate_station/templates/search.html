@@ -17,15 +17,10 @@
                 <div id="autocomplete-results" style="display: none;"></div> <!-- Lista wyników -->
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center" style="border-radius: 25px;">
-                    Szukaj
-                </button>
+                <button type="submit" class="btn btn-primary">Szukaj</button>
+            </div>
             <div class="col-auto">
-                <button type="button" class="gps-btn" onclick="locateMe()">Zlokalizuj mnie</button>
-                <div class="gps-marker">
-                        <div class="gps-marker-circle"></div>
-                        <div class="gps-marker-triangle"></div>
-                    </div>
+                <button type="button" class="btn btn-success" onclick="locateMe()">Zlokalizuj mnie</button>
             </div>
         </form>
     </section>
@@ -88,7 +83,7 @@
 </div>
 
 <script>
-    const apiKey = "IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD"  // Zastąp swoim kluczem API TomTom
+    const apiKey = "jtKVQ8BkAQTF1XZDAfQUfvW2ZGyC4fvK"  // Zastąp swoim kluczem API TomTom
     const searchInput = document.getElementById('search-input');
     const resultsDiv = document.getElementById('autocomplete-results');
     let userLatitude = null;
@@ -187,62 +182,4 @@
         }
     });
 </script>
-    <style>
-    .gps-btn {
-        border: none;
-        background-color: #f1f1f1;
-        position: relative;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s;
-    }
-
-    .gps-btn:hover {
-        transform: scale(1.1);
-    }
-
-    .gps-marker {
-        position: relative;
-        width: 24px;
-        height: 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .gps-marker-circle {
-        width: 24px;
-        height: 24px;
-        background-color: blue;
-        border-radius: 50%;
-        position: relative;
-    }
-
-    .gps-marker-circle::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 10px;
-        height: 10px;
-        background-color: white;
-        border-radius: 50%;
-    }
-
-    .gps-marker-triangle {
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-top: 20px solid blue;
-        margin-top: -5px; /* Przesunięcie o 5px wyżej */
-    }
-</style>
 {% endblock %}

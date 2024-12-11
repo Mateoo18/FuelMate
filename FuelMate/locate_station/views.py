@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, sqrt, atan2
 from django.shortcuts import render
 
-API_KEY = os.getenv("API_KEY_TOMTOM")
+API_KEY = os.getenv("API_KEY_TOM_TOM")
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371  # Promień Ziemi w kilometrach
