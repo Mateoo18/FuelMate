@@ -29,6 +29,9 @@ urlpatterns = [
 
     path('station_fuel/', views.station_fuel_list, name='station_fuel_list'),
 
+    path('station_details/details/<int:station_id>/ajax/', views.station_details_ajax, name='station_details_ajax'),
+
+
 
 
 

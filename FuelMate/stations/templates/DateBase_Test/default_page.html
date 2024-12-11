@@ -67,6 +67,26 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+
+
+        .details-table-container {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 3;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto; /* Dodano przewijanie */
+        }
+        .details-table-container h4 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
         .table {
             font-size: 0.9rem;
         }
@@ -91,9 +111,34 @@
             background-color: #333333; /* Lekko jaśniejszy czarny na hover */
         }
 
+        /* Styl dla animacji pojawiania się */
+        .station-details-container {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 3;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .station-details-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
     </style>
 </head>
 <body>
+
+
     <!-- Mapa -->
     <div id="map"></div>
 
@@ -155,6 +200,14 @@
         </table>
     </div>
 
+    <!-- Kontener na szczegóły stacji -->
+    <div id="station-details" class="station-details-container">
+        <h4 class="text-center">Szczegóły Stacji</h4>
+        <div id="station-details-content" class="text-muted text-center">
+            Kliknij na marker na mapie, aby zobaczyć szczegóły.
+        </div>
+    </div>
+
     <!-- Przycisk do lokalizacji stacji -->
     <a href="{% url 'locate_station:search' %}" class="locate-station-btn">Wyszukaj Najbliższe stacje</a>
 
@@ -184,7 +237,6 @@
             }
         }
 
-
         async function addGasStationMarkers() {
             const stations = await fetchGasStations();
             if (!stations.length) {
@@ -193,65 +245,63 @@
             }
 
             stations.forEach(station => {
-        const marker = new tt.Marker()
-            .setLngLat([station.Longitude, station.Latitude])
-            .addTo(map);
-        // Tworzenie linku do strony z detalami stacji
-        const stationDetailsUrl = `/station_details/details/${station.Station_Id}/`;
+                const marker = new tt.Marker()
+                    .setLngLat([station.Longitude, station.Latitude])
+                    .addTo(map);
 
-        // Dodanie popupa z możliwością kliknięcia oraz linkiem do szczegółów stacji
-        const popup = new tt.Popup({ offset: 35 })
-            .setHTML(`
-                <strong>${station.Name}</strong><br>
-                ${station.Address}, ${station.City}<br>
-                Postcode: ${station.Zip}<br>
-                Phone: ${station.Phone}<br>
-                <a href="${stationDetailsUrl}" target="_blank">Zobacz szczegóły</a>
-            `);
+                marker.getElement().addEventListener('click', async () => {
+                    const detailsContainer = document.getElementById('station-details');
+                    const content = document.getElementById('station-details-content');
 
-        marker.setPopup(popup);
+                    const stationDetails = `
+                        <strong>${station.Name}</strong><br>
+                        ${station.Address}, ${station.City}<br>
+                        Kod pocztowy: ${station.Zip}<br>
+                        Telefon: ${station.Phone}<br>
+                        <a href="/station_details/details/${station.Station_Id}/" target="_blank">Zobacz szczegóły</a>
+                    `;
+                    content.innerHTML = stationDetails;
+                    detailsContainer.classList.add('show'); // Pokaż animację
+                });
 
 
-    });
 
+
+            });
         }
 
         addGasStationMarkers();
     </script>
+
     <!-- Modal logowania -->
-<!-- Modal logowania -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">Zaloguj się</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="{% url 'accounts:login' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Nazwa użytkownika</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Zaloguj się</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'accounts:login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nazwa użytkownika</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Hasło</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Zaloguj</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Nie masz konta? <a href="{% url 'accounts:register' %}">Zarejestruj się</a></p>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Hasło</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Zaloguj</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Nie masz konta? <a href="{% url 'accounts:register' %}">Zarejestruj się</a></p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -15,11 +15,11 @@
     </style>
 </head>
 <body class="bg-light">
-    <header class="bg-dark text-white p-3 text-center position-relative">
-        <h1>FuelMate</h1>
-
-        <!-- Przycisk wylogowania w prawym górnym rogu -->
-
+   <header class="bg-dark text-white p-3 text-center position-relative">
+        <!-- Link, który przekierowuje do strony głównej -->
+        <a href="{% url 'statrions:home' %}" class="text-white text-decoration-none">
+            <h1>FuelMate</h1>
+        </a>
     </header>
 
     <main class="container mt-5">

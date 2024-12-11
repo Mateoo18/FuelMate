@@ -7,6 +7,11 @@ from django.db.models import OuterRef, Subquery
 from .models import Gas_Stations, Station_Fuel, Fuel
 import random
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.http import JsonResponse
+from .models import Gas_Stations
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, render
 @login_required
 def fuel_list(request):
     fuels = Fuel.objects.all()
@@ -59,3 +64,14 @@ def station_fuel_list(request):
 @login_required
 def DataBase_Test(request):
     return render(request, 'D')
+
+
+
+def station_details_ajax(request, station_id):
+    print("station")
+
+    station = get_object_or_404(Gas_Stations, Station_Id=station_id)
+    print(station)
+    html_content = render(request, "DateBase_Test/station_details_partia.html", {'station': station}).content
+    return HttpResponse(html_content, content_type='text/html')
+
