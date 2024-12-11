@@ -29,8 +29,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+load_dotenv()
+API_KEY_TOM = os.getenv('API_KEY_TOMTOM')
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stations',
     'accounts',
-    'profil_account'
+    'profil_account',
+    'locate_station',
+    'add_prices',
+    'ranking',
+    'django_cron',
+    'maps',
+    'price_history',
+    'station_details',
+
 
 ]
 
@@ -54,7 +62,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 
 ROOT_URLCONF = 'FuelMate.urls'
 
@@ -128,7 +141,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # To jest domyślna lokalizacja, ale zależnie od struktury możesz to zmienić
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -136,4 +151,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'accounts:logged_in'
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Możesz użyć innego serwera SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fuelmatepoland@gmail.com'  # Twój adres e-mail
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_PASSWORD')  # Hasło do e-maila
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Adres e-mail, z którego będą wysyłane wiadomości
 

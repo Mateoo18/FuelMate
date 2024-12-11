@@ -1,0 +1,124 @@
+{% extends "accounts/base.html" %}
+
+{% block content %}
+    <h1>Ceny Historyczne: {{ station.Name }}</h1>
+
+    <h2>Adres: {{ station.Address }}</h2>
+
+    <!-- PB95 -->
+    <h3>PB95</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in fuel_prices.1 %}
+                <tr>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }} PLN</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Brak danych o cenach historycznych dla PB95.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PB98 -->
+    <h3>PB98</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in fuel_prices.2 %}
+                <tr>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }} PLN</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Brak danych o cenach historycznych dla PB98.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Diesel -->
+    <h3>Diesel</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in fuel_prices.3 %}
+                <tr>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }} PLN</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Brak danych o cenach historycznych dla Diesla.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- LPG -->
+    <h3>LPG</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in fuel_prices.4 %}
+                <tr>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }} PLN</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Brak danych o cenach historycznych dla LPG.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Elektryczne -->
+    <h3>Elektryczne</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in fuel_prices.5 %}
+                <tr>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }} PLN</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Brak danych o cenach historycznych dla Elektrycznych.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'price_history:list_price' %}" class="btn btn-secondary">Wróć do ulubionych stacji</a>
+{% endblock %}

@@ -3,20 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Moja Aplikacja{% endblock %}</title>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+     <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        /* Dodatkowe style, aby upewnić się, że przycisk jest na odpowiedniej pozycji */
+        .logout-button {
+            position: absolute;
+            top: 50%;
+            right: 20px;  /* Zmienia to dokładne położenie przycisku */
+            transform: translateY(-50%);
+        }
+    </style>
 </head>
 <body class="bg-light">
-    <header class="bg-dark text-white p-3 text-center">
-        <h1>FuelMate</h1>
+   <header class="bg-dark text-white p-3 text-center position-relative">
+        <!-- Link, który przekierowuje do strony głównej -->
+        <a href="{% url 'statrions:home' %}" class="text-white text-decoration-none">
+            <h1>FuelMate</h1>
+        </a>
     </header>
+
     <main class="container mt-5">
-        {% block content %}{% endblock %}
+        {% block content %}
+        <!-- Zawartość strony będzie wstawiona tutaj -->
+        {% endblock %}
     </main>
+
     <footer class="text-center mt-5 mb-3 text-muted">
         <p>&copy; {{ year }} FuelMate</p>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 </html>

@@ -1,0 +1,8 @@
+<div>
+    <h5>{{ station.Name }}</h5>
+    <p><strong>Adres:</strong> {{ station.Address }}, {{ station.City }}</p>
+    <p><strong>Kod Pocztowy:</strong> {{ station.Zip }}</p>
+    <p><strong>Telefon:</strong> {{ station.Phone }}</p>
+    <p><strong>Rodzaje Paliw:</strong> {{ station.fuel_types }}</p>
+    <a href="/station_details/details/{{ station.id }}/" target="_blank" class="btn btn-primary btn-sm">Więcej informacji</a>
+</div>

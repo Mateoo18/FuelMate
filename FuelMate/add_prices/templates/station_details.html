@@ -1,0 +1,112 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Aktualizacja cen paliw{% endblock %}
+{% load static %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktualizacja cen paliw</title>
+
+    <!-- Link do pliku CSS -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <!-- Powiadomienia -->
+    <div id="notifications"></div>
+
+    <!-- Nagłówek stacji paliw -->
+    <h1>{{ station.name }}</h1>
+    <p><strong>Adres:</strong> {{ station.address }}</p>
+
+    <!-- Formularz aktualizacji cen paliw -->
+    <h2>Ceny paliw</h2>
+    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id_stations %}">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <th>Rodzaj Paliwa</th>
+                <th>Cena</th>
+            </tr>
+            {% for fuel in fuels %}
+            <tr>
+                <td>{{ fuel.Name }}</td>
+                <td>
+                    <input type="text" name="price_{{ fuel.Fuel_Id }}" placeholder="Wpisz cenę">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Zaktualizuj ceny</button>
+    </form>
+
+    <!-- Sekcja zgłaszania zażaleń -->
+    <h2>Zgłoś zażalenie</h2>
+    <form method="post" action="{% url 'add_prices:report_complain' station_id=station.id_stations %}">
+        {% csrf_token %}
+        <textarea name="complain_text" rows="4" cols="50" placeholder="Wpisz swoje zażalenie tutaj..."></textarea><br>
+        <button type="submit">Wyślij zażalenie</button>
+    </form>
+
+    <!-- Mapa stacji paliw na dole strony -->
+    <h2>Lokalizacja stacji na mapie</h2>
+    <div id="map" style="width: 100%; height: 500px;"></div>
+
+    <!-- Linki do plików JS i CSS -->
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css"> <!-- Dodano plik CSS TomTom -->
+
+    <script>
+        // Przekazywanie zmiennych z Django do JS
+        const stationLongitude = {{ station.longitude }};
+        const stationLatitude = {{ station.latitude }};
+        const stationName = "{{ station.name|escapejs }}";
+        const stationAddress = "{{ station.address|escapejs }}";
+        const stationCity = "{{ station.city|escapejs }}";
+        const stationPostalCode = "{{ station.postal_code|escapejs }}";
+        const stationPhone = "{{ station.phone|escapejs }}";
+
+        // Inicjalizacja mapy z lokalizacją stacji
+        const map = tt.map({
+            key: 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD',
+            container: 'map',
+            center: [stationLongitude, stationLatitude], // Współrzędne stacji paliw
+            zoom: 14
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        // Dodanie markera dla bieżącej stacji
+        const marker = new tt.Marker()
+            .setLngLat([stationLongitude, stationLatitude])
+            .addTo(map);
+
+        const popup = new tt.Popup({ offset: 35 })
+            .setHTML(`<strong>${stationName}</strong><br>
+                      ${stationAddress}<br>
+                      Miasto: ${stationCity}<br>
+                      Kod pocztowy: ${stationPostalCode}<br>
+                      Telefon: ${stationPhone}`);
+        marker.setPopup(popup);
+        marker.togglePopup();
+    </script>
+
+    <script>
+        // Obsługa powiadomień z Django
+        const notifications = document.getElementById('notifications');
+        const djangoMessages = {{ serialized_messages|safe }};  // Przekazujemy serializowane wiadomości
+
+        djangoMessages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = `notification ${msg.tags}`;
+            div.textContent = msg.message;
+
+            notifications.appendChild(div);
+
+            // Usuń powiadomienie po 5 sekundach
+            setTimeout(() => div.remove(), 5000);
+        });
+    </script>
+    <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary">Wróć do Profilu</a>
+{% endblock %}

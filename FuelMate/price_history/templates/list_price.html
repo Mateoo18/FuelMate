@@ -1,0 +1,36 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Sprawdz Ceny Historyczne{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">Sprawdz Ceny Historyczne</h1>
+
+        <!-- Displaying messages -->
+        {% if messages %}
+            <div class="alert alert-info">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="station" class="form-label">Wybierz Stację:</label>
+                <select class="form-control" id="station" name="station_id" required>
+                    <option value="0" disabled selected>Wybierz stację</option>
+                    {% for station in stations %}
+                        <option value="{{ station.Station_Id }}">{{ station.Name }} - {{ station.Address }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success mt-3 w-100">Sprawdz Ceny Historyczne</button>
+        </form>
+
+
+        <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary mt-3 w-100">Wróć</a>
+
+    </div>
+{% endblock %}

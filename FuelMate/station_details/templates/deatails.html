@@ -1,0 +1,178 @@
+{% extends "accounts/base.html" %}
+{% block title %}
+    Szczegóły Stacji: {{ station.Name }}
+{% endblock %}
+{% block content %}
+
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Lewa kolumna: szczegóły stacji -->
+        <div class="col-md-8">
+            <h1 class="display-4 mb-4">Szczegóły Stacji: {{ station.Name }}</h1>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Adres:</strong> {{ station.Address }}, {{ station.City }}</li>
+                <li class="list-group-item"><strong>Telefon:</strong> {{ station.Phone }}</li>
+                <li class="list-group-item"><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</li>
+                <li class="list-group-item"><strong>Kod Pocztowy:</strong> {{ station.Zip }}</li>
+            </ul>
+            <h1 class="display-4 mb-4">
+                Szczegóły Stacji: {{ station.Name }}
+                <!-- Ikona serduszka dla ulubionych -->
+                <a href="#" id="favorite-button" data-station-id="{{ station.id }}">
+                    {% if is_favorite %}
+                        <i class="fas fa-heart" style="color: red;"></i>  <!-- Pełne serce -->
+                    {% else %}
+                        <i class="far fa-heart" style="color: red;"></i>  <!-- Puste serce -->
+                    {% endif %}
+                </a>
+            </h1>
+
+            <!-- Sekcja z aktualnymi cenami -->
+            <h2 class="mt-4">Aktualne Ceny Paliw</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Rodzaj Paliwa</th>
+                            <th>Cena (PLN)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fuel_type, prices in fuel_prices_now.items %}
+                            <tr>
+                                <td>{{ fuel_type }}</td>
+                                <td>
+                                    {% if prices %}
+                                        {{ prices.0.price }} PLN
+                                    {% else %}
+                                        Brak danych
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sekcja z historycznymi cenami -->
+            <h2 class="mt-4">Historyczne Ceny Paliw</h2>
+            <div id="charts-container" class="mt-3">
+                <!-- Wykresy zostaną tutaj wstawione dynamicznie przez Chart.js -->
+            </div>
+        </div>
+
+        <!-- Prawa kolumna: mapa -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header text-white bg-primary">
+                    <strong>Mapa Stacji</strong>
+                </div>
+                <div class="card-body">
+                    <div id="map" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Linki do plików JS i CSS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+<link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dane do wykresów
+        const fuelPrices = JSON.parse('{{ fuel_prices_json|escapejs }}');
+
+        // Inicjalizacja kontenera wykresów
+        const chartsContainer = document.getElementById('charts-container');
+
+        // Tworzenie wykresów dla każdego typu paliwa
+        Object.keys(fuelPrices).forEach((fuelType, index) => {
+            if (fuelPrices[fuelType] && fuelPrices[fuelType].length > 0) {
+                // Tworzymy element canvas
+                const canvas = document.createElement('canvas');
+                canvas.id = `fuel-chart-${index}`;
+                canvas.classList.add('mb-4');
+                chartsContainer.appendChild(canvas);
+
+                // Dane do wykresu
+                const chartData = {
+                    labels: fuelPrices[fuelType].map(item => item.date),
+                    datasets: [{
+                        label: `Ceny ${fuelType}`,
+                        data: fuelPrices[fuelType].map(item => item.price),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.4,
+                    }]
+                };
+
+                // Konfiguracja wykresu
+                const chartConfig = {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: `Historia cen dla ${fuelType}`
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Data'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Cena (PLN)'
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // Renderowanie wykresu
+                new Chart(canvas, chartConfig);
+            }
+        });
+
+        // Inicjalizacja mapy TomTom
+        const stationLongitude = {{ station.Longitude }};
+        const stationLatitude = {{ station.Latitude }};
+        const stationName = "{{ station.Name|escapejs }}";
+        const stationAddress = "{{ station.Address|escapejs }}";
+        const stationCity = "{{ station.City|escapejs }}";
+
+        const map = tt.map({
+            key: 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD',
+            container: 'map',
+            center: [stationLongitude, stationLatitude],
+            zoom: 14
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        const marker = new tt.Marker()
+            .setLngLat([stationLongitude, stationLatitude])
+            .addTo(map);
+
+        const popup = new tt.Popup({ offset: 35 })
+            .setHTML(`<strong>${stationName}</strong><br>${stationAddress}<br>${stationCity}`);
+        marker.setPopup(popup);
+        marker.togglePopup();
+    });
+
+</script>
+
+{% endblock %}

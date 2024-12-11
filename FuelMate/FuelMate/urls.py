@@ -6,8 +6,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('stations.urls')),
     path('accounts/', include('accounts.urls')),
-
+    path('maps/', include('maps.urls')),
     path('profil_account/', include('profil_account.urls')),
+    path('locate_station/', include('locate_station.urls')),
+    path('add_prices/', include('add_prices.urls')),
+    path('price_history/', include('price_history.urls')),
+    path('ranking/', include('ranking.urls')),
+
+    path('station_details/', include('station_details.urls')),
+
 
 ]
 
