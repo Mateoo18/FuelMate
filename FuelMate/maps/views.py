@@ -8,7 +8,7 @@ def gas_stations_list(request):
 
     # Serializacja danych do formatu JSON
     data = list(stations.values(
-        "Name", "Address", "City", "Zip", "Phone", "Latitude", "Longitude"
+        "Name", "Address", "City", "Zip", "Phone", "Latitude", "Longitude","Station_Id"
     ))
 
     return JsonResponse(data, safe=False)

@@ -9,7 +9,11 @@ from stations.views import favorite_station_list
 from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required
 from stations.models import Users, Favorite_Station, Gas_Stations
-
+from django.contrib.auth.views import LogoutView
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.views import LogoutView
+from django.contrib import messages
 @login_required
 def logged_in_view(request):
     return redirect(reverse_lazy('statrions:home'))
@@ -33,3 +37,17 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('profil_account:profile')  # Redirect to stations app after login
+
+class LoginModalView(LoginView):
+    template_name = 'accounts/login_partial.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return render(request, self.template_name, self.get_context_data())
+        return super().get(request, *args, **kwargs)
+
+
+class CustomLogoutView(LogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, "Zostałeś pomyślnie wylogowany!")
+        return super().dispatch(request, *args, **kwargs)

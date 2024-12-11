@@ -1,0 +1,184 @@
+{% extends "accounts/base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="display-4">Szczegóły Stacji: {{ station.Name }}</h1>
+                <p class="lead"><strong>Adres:</strong> {{ station.Address }}, {{ station.City }}</p>
+                <p><strong>Telefon:</strong> {{ station.Phone }}</p>
+                <p><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</p>
+                <p><strong>Zip:</strong> {{ station.Zip }}</p>
+
+                <!-- Sekcja z aktualnymi cenami -->
+                <h2 class="mt-4">Aktualne Ceny Paliw</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Rodzaj Paliwa</th>
+                                <th>Cena</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fuel_type, prices in fuel_prices_now.items %}
+                                <tr>
+                                    <td>{{ fuel_type }}</td>
+                                    <td>
+                                        {% if prices %}
+                                            {{ prices.0.price }} PLN
+                                        {% else %}
+                                            Brak danych
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Sekcja z historycznymi cenami (generowanie tabel) -->
+                {% for fuel_type, prices in fuel_prices_old.items %}
+                    <h3>{{ fuel_type }}</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cena</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for price in prices %}
+                                <tr>
+                                    <td>{{ price.date }}</td>
+                                    <td>{{ price.price }} PLN</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="2">Brak danych o cenach historycznych dla {{ fuel_type }}.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+
+            </div>
+
+            <!-- Mapa Stacji po prawej stronie -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Mapa Stacji</strong>
+                    </div>
+                    <div class="card-body">
+                        <!-- Wstawienie mapy -->
+                        <div id="map" style="height: 300px; background-color: lightgrey;">
+                            <!-- Wstawienie mapy tutaj -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sekcja z wykresami historycznych cen paliw -->
+        <h3 class="mt-4">Wykresy Historycznych Cen Paliw</h3>
+
+        <!-- Dodanie oddzielnych kontenerów dla wykresów (z mniejszymi wymiarami) -->
+        <div id="fuel-chart-1" style="height: 300px;"></div>
+        <div id="fuel-chart-2" style="height: 300px;"></div>
+        <div id="fuel-chart-3" style="height: 300px;"></div>
+        <div id="fuel-chart-4" style="height: 300px;"></div>
+        <div id="fuel-chart-5" style="height: 300px;"></div>
+
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    var fuelPrices = JSON.parse('{{ fuel_prices_json|escapejs }}');
+                    console.log('Parsed fuel prices:', fuelPrices);
+
+                    // Przygotowanie danych do wykresów
+                    var chartIndex = 1; // Indeks wykresu, początkowo 1
+
+                    // Iteracja po wszystkich kluczach (typach paliw)
+                    Object.keys(fuelPrices).forEach(function(fuelType) {
+                        // Sprawdzamy, czy dane paliwa mają ceny
+                        if (fuelPrices[fuelType] && fuelPrices[fuelType].length > 0) {
+                            // Przygotowanie danych dla wykresu
+                            var trace = {
+                                x: fuelPrices[fuelType].map(item => item.date),  // Daty
+                                y: fuelPrices[fuelType].map(item => item.price), // Ceny
+                                type: 'scatter', // Typ wykresu - liniowy
+                                mode: 'lines+markers', // Użycie punktów na linii
+                                name: 'Paliwo ' + fuelType // Nazwa serii (typ paliwa)
+                            };
+
+                            // Konfiguracja układu wykresu
+                            var layout = {
+                                title: 'Historyczne Ceny Paliw - ' + fuelType,
+                                xaxis: {
+                                    title: 'Data',
+                                    type: 'date'  // Ustawienie osi X na typ 'data'
+                                },
+                                yaxis: {
+                                    title: 'Cena (PLN)'  // Oś Y to cena
+                                },
+                                legend: {
+                                    title: {
+                                        text: 'Rodzaje Paliw'
+                                    }
+                                }
+                            };
+
+                            // Renderowanie wykresu w odpowiednim kontenerze
+                            Plotly.newPlot('fuel-chart-' + chartIndex, [trace], layout);
+                            chartIndex++; // Zwiększamy numer wykresu po każdej iteracji
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('Error parsing fuel prices:', error);  // Błąd parsowania danych
+                }
+            });
+        </script>
+
+
+    <!-- Linki do plików JS i CSS -->
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css"> <!-- Dodano plik CSS TomTom -->
+
+    <script>
+        // Przekazywanie zmiennych z Django do JS
+        const stationLongitude = {{ station.Longitude }};
+        const stationLatitude = {{ station.Latitude }};
+        const stationName = "{{ station.Name|escapejs }}";
+        const stationAddress = "{{ station.Address|escapejs }}";
+        const stationCity = "{{ station.City|escapejs }}";
+
+
+        // Inicjalizacja mapy z lokalizacją stacji
+        const map = tt.map({
+            key: 'IEG0jzxyaLifhaBjY8o7ofwsPiiXK4xD',
+            container: 'map',
+            center: [stationLongitude, stationLatitude], // Współrzędne stacji paliw
+            zoom: 14
+        });
+
+        map.addControl(new tt.NavigationControl());
+
+        // Dodanie markera dla bieżącej stacji
+        const marker = new tt.Marker()
+            .setLngLat([stationLongitude, stationLatitude])
+            .addTo(map);
+
+        const popup = new tt.Popup({ offset: 35 })
+            .setHTML(`<strong>${stationName}</strong><br>
+                      ${stationAddress}<br>
+                      Miasto: ${stationCity}<br>
+                    `);
+        marker.setPopup(popup);
+        marker.togglePopup();
+    </script>
+
+    </div>
+{% endblock %}

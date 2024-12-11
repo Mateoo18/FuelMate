@@ -13,6 +13,8 @@ urlpatterns = [
     path('price_history/', include('price_history.urls')),
     path('ranking/', include('ranking.urls')),
 
+    path('station_details/', include('station_details.urls')),
+
 
 ]
 
