@@ -80,26 +80,38 @@ def report_incident(request):
 
 @login_required
 def update_prices(request, station_id):
+    # Pobranie stacji paliw i paliw
     station = get_object_or_404(Gas_Stations, id_stations=station_id)
     fuels = Fuel.objects.all()
 
     if request.method == "POST":
         missing_prices = []
+        # Listę paliw, które nie mają przypisanej ceny
         for fuel in fuels:
+            # Pobranie statusu dla danego paliwa
+            status = request.POST.get(f"status_{fuel.Fuel_Id}")
             new_price = request.POST.get(f"price_{fuel.Fuel_Id}")
-            if not new_price:
+
+            # Jeśli status to "add", sprawdzamy, czy cena została wpisana
+            if status == "add" and not new_price:
                 missing_prices.append(fuel.Name)
 
         if missing_prices:
+            # Tworzymy komunikat tylko dla paliw, które mają brakujące ceny
             missing_fuels = ", ".join(missing_prices)
             messages.warning(request, f"Musisz uzupełnić ceny dla następujących paliw: {missing_fuels}.")
             return redirect('add_prices:update_prices', station_id=station_id)
 
+        # Iteracja po wszystkich paliwach i przypisanie cen lub statusów
         for fuel in fuels:
-            new_price = request.POST.get(f"price_{fuel.Fuel_Id}")
-            if new_price:
+            status = request.POST.get(f"status_{fuel.Fuel_Id}")  # Pobranie wybranego statusu
+            new_price = request.POST.get(f"price_{fuel.Fuel_Id}")  # Pobranie ceny, jeśli jest wprowadzona
+
+            # Obsługa zależności statusu
+            if status == "add" and new_price:
+                # Dodanie ceny paliwa
                 try:
-                    new_price = float(new_price)
+                    new_price = float(new_price)  # Konwersja ceny na float
                     station_fuel = StationFuel.objects.filter(station=station, fuel=fuel).first()
                     if station_fuel:
                         station_fuel.Price = new_price
@@ -124,6 +136,23 @@ def update_prices(request, station_id):
                     messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
                     return redirect('add_prices:update_prices', station_id=station_id)
 
+            elif status == "none":
+                # Jeśli "Brak danego paliwa na stacji" to zapisujemy 0
+                StationFuel.objects.update_or_create(
+                    station=station,
+                    fuel=fuel,
+                    defaults={'Price': 0, 'Update_Date': timezone.now(), 'user': request.user}
+                )
+
+            elif status == "not_available":
+                # Jeśli "Dane paliwo nie występuje na stacji" to zapisujemy -1
+                StationFuel.objects.update_or_create(
+                    station=station,
+                    fuel=fuel,
+                    defaults={'Price': -1, 'Update_Date': timezone.now(), 'user': request.user}
+                )
+
+        # Dodanie punktów za zaktualizowanie cen
         Points.objects.create(
             user=request.user,
             points=1,
@@ -143,7 +172,6 @@ def update_prices(request, station_id):
         'serialized_messages': serialized_messages  # Dodaj serializowane komunikaty
     }
     return render(request, 'station_details.html', context)
-
 
 @login_required
 def report_complain(request, station_id):

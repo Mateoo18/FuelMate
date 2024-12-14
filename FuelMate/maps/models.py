@@ -1,5 +1,7 @@
 from django.db import models
 
+
+
 class Gas_Stations(models.Model):
     Station_Id = models.BigAutoField(db_column='id_stations', primary_key=True)
     Address = models.CharField(db_column='address', max_length=100)
