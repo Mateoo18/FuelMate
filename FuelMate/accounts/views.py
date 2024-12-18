@@ -3,12 +3,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse_lazy, reverse
-from stations.models import Users, Favorite_Station, Gas_Stations
+from stations.models import Users, FavoriteStation, GasStations
 
 from stations.views import favorite_station_list
 from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required
-from stations.models import Users, Favorite_Station, Gas_Stations
 from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from django.shortcuts import redirect

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from stations.models import Gas_Stations
+
+
 
 class StationRating(models.Model):
     id_stations = models.ForeignKey('stations.Gas_Stations', on_delete=models.CASCADE)

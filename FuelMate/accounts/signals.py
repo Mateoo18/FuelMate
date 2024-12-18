@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from .models import Profile
 # models.py
 from django.db import models
-from stations.models import Users, Favorite_Station, Gas_Stations
+from stations.models import Users, FavoriteStation, GasStations
 
 
 

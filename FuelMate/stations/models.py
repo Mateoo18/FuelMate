@@ -9,7 +9,7 @@ class Fuel(models.Model):
         db_table = 'Fuel'
 
 
-class Gas_Stations(models.Model):
+class GasStations(models.Model):
     Station_Id = models.BigAutoField(db_column='id_stations', primary_key=True)
     Address = models.CharField(db_column='address', max_length=100)
     City = models.CharField(db_column='city', max_length=100)
@@ -53,7 +53,7 @@ class Users(models.Model):
         db_table = 'auth_user'
 
 
-class Favorite_Station(models.Model):
+class FavoriteStation(models.Model):
     Favorite_Id = models.BigAutoField(db_column='Favorite_Stations_Id', primary_key=True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
     Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
@@ -90,7 +90,7 @@ class Report(models.Model):
         managed=False
         db_table = 'Reports'
 
-class Station_Rev(models.Model):
+class StationRev(models.Model):
     Station_Reviews_Id = models.BigAutoField(db_column='Station_Reviews_Id', primary_key=True)
     Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
@@ -117,7 +117,7 @@ class Promotion(models.Model):
 
 
 
-class Price_history(models.Model):
+class Pricehistory(models.Model):
     Price_Id = models.BigAutoField(db_column='Price_History_Id', primary_key=True)
     Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
@@ -128,7 +128,7 @@ class Price_history(models.Model):
         managed=False
         db_table = 'Price_History'
 
-class Station_Fuel(models.Model):
+class StationFuel(models.Model):
     Station_Fuel_Id = models.BigAutoField(db_column='Station_Fuel_Id', primary_key=True)
     Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
@@ -142,7 +142,7 @@ class Station_Fuel(models.Model):
 
 class StationRating(models.Model):
     id_stations = models.OneToOneField(
-        Gas_Stations,
+        GasStations,
         on_delete=models.CASCADE,
         db_column='id_stations',
         related_name='rating',
@@ -154,3 +154,14 @@ class StationRating(models.Model):
     class Meta:
         managed = False
         db_table = 'station_rating'
+
+class PostalCode(models.Model):
+    zip_code = models.CharField(max_length=10, primary_key=True)  # Klucz główny
+    country = models.CharField(max_length=100)
+    place = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    class Meta:
+        db_table = 'postal_code'  # Nazwa tabeli w bazie danych
+        managed = False  # Django nie zarządza tą tabelą

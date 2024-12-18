@@ -8,12 +8,13 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from django.utils import  timezone
-from .models import Gas_Stations, Fuel, StationFuel, PriceHistory, Points,Complain
+from .models import GasStations, Fuel, StationFuel, PriceHistory, Points,Complain
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core.mail import send_mail
 from django.utils import timezone
+
 API_KEY = os.getenv("API_KEY_GOOGLE")
 
 
@@ -48,7 +49,7 @@ def nearest_stations(request):
             longitude = float(longitude)
 
             # Filtracja najbliższych stacji
-            stations = Gas_Stations.objects.raw(
+            stations = GasStations.objects.raw(
                 'SELECT *, (6371 * acos(cos(radians(%s)) * cos(radians("latitude")) * '
                 'cos(radians("longitude") - radians(%s)) + sin(radians(%s)) * sin(radians("latitude")))) AS distance '
                 'FROM "Gas_Stations" ORDER BY distance LIMIT 5', [latitude, longitude, latitude]
@@ -58,10 +59,11 @@ def nearest_stations(request):
     serialized_messages = [
         {"message": msg.message, "tags": msg.tags} for msg in get_messages(request)
     ]
+    print("Stacje: ",stations)
     return render(request, 'nearest_stations_to_add_price.html', {'stations': stations,'serialized_messages': serialized_messages, 'error': error})
 
 def station_to_list(request, station_id):
-    station = get_object_or_404(Gas_Stations, pk=station_id)
+    station = get_object_or_404(GasStations, pk=station_id)
     if request.method == "POST":
         new_price = request.POST.get("price")
         station.price = new_price
@@ -81,7 +83,7 @@ def report_incident(request):
 @login_required
 def update_prices(request, station_id):
     # Pobranie stacji paliw i paliw
-    station = get_object_or_404(Gas_Stations, id_stations=station_id)
+    station = get_object_or_404(GasStations, id_stations=station_id)
     fuels = Fuel.objects.all()
 
     if request.method == "POST":
@@ -187,7 +189,7 @@ def report_complain(request, station_id):
 
 
 
-    station = get_object_or_404(Gas_Stations, id_stations=station_id)
+    station = get_object_or_404(GasStations, id_stations=station_id)
 
     if request.method == "POST":
         complain_text = request.POST.get("complain_text")
