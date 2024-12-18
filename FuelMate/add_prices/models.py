@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-
+from stations.models import Gas_Stations
 class Fuel(models.Model):
     Fuel_Id = models.BigAutoField(primary_key=True)
     Name = models.CharField(max_length=100)
@@ -11,19 +11,19 @@ class Fuel(models.Model):
         db_table = 'Fuel'
 
 
-class Gas_Stations(models.Model):
-    id_stations = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    postal_code = models.CharField(max_length=20)
-    city = models.CharField(max_length=255)
-    phone = models.CharField(max_length=50, blank=True, null=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
-    class Meta:
-        managed = False
-        db_table = 'Gas_Stations'
+# class Gas_Stations(models.Model):
+#     id_stations = models.AutoField(primary_key=True)
+#     name = models.CharField(max_length=255)
+#     address = models.CharField(max_length=255)
+#     postal_code = models.CharField(max_length=20)
+#     city = models.CharField(max_length=255)
+#     phone = models.CharField(max_length=50, blank=True, null=True)
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6)
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'Gas_Stations'
 
 
 class StationFuel(models.Model):
@@ -66,7 +66,7 @@ class PriceHistory(models.Model):
 class Complain(models.Model):
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    station = models.ForeignKey('Gas_Stations',db_column='id_stations', on_delete=models.CASCADE)
+    station = models.ForeignKey(Gas_Stations, on_delete=models.CASCADE)
     text = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
 

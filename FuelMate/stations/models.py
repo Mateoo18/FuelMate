@@ -138,3 +138,19 @@ class Station_Fuel(models.Model):
     class Meta:
         managed=False
         db_table = 'Station_Fuel'
+
+
+class StationRating(models.Model):
+    id_stations = models.OneToOneField(
+        Gas_Stations,
+        on_delete=models.CASCADE,
+        db_column='id_stations',
+        related_name='rating',
+        primary_key=True
+    )
+    rating = models.FloatField(null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'station_rating'
