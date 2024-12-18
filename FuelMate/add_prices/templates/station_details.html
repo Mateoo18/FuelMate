@@ -17,12 +17,14 @@
     <div id="notifications"></div>
 
     <!-- Nagłówek stacji paliw -->
-    <h1>{{ station.name }}</h1>
-    <p><strong>Adres:</strong> {{ station.address }}</p>
+    <h1>{{ station.Name }}</h1>
+    <p><strong>Adres:</strong> {{ station}}</p>
 
     <!-- Formularz aktualizacji cen paliw -->
     <h2>Ceny paliw</h2>
-    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id%}">
+    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.Station_Id %}">
+
+
     {% csrf_token %}
     <table>
         <tr>
@@ -52,7 +54,7 @@
 </form>
     <!-- Sekcja zgłaszania zażaleń -->
     <h2>Zgłoś zażalenie odnośnie danej stacji</h2>
-    <form method="post" action="{% url 'add_prices:report_complain' station_id=station.id_stations %}">
+    <form method="post" action="{% url 'add_prices:report_complain' station_id=station.Station_Id %}">
         {% csrf_token %}
         <textarea name="complain_text" rows="4" cols="50" placeholder="Wpisz swoje zażalenie tutaj..."></textarea><br>
         <button type="submit">Wyślij zażalenie</button>
@@ -68,13 +70,13 @@
 
     <script>
         // Przekazywanie zmiennych z Django do JS
-        const stationLongitude = {{ station.longitude }};
-        const stationLatitude = {{ station.latitude }};
-        const stationName = "{{ station.name|escapejs }}";
-        const stationAddress = "{{ station.address|escapejs }}";
-        const stationCity = "{{ station.city|escapejs }}";
-        const stationPostalCode = "{{ station.postal_code|escapejs }}";
-        const stationPhone = "{{ station.phone|escapejs }}";
+        const stationLongitude = {{ station.Longitude }};
+        const stationLatitude = {{ station.Latitude }};
+        const stationName = "{{ station.Name|escapejs }}";
+        const stationAddress = "{{ station.Address|escapejs }}";
+        const stationCity = "{{ station.City|escapejs }}";
+        const stationPostalCode = "{{ station.Postal_code|escapejs }}";
+        const stationPhone = "{{ station.Phone|escapejs }}";
 
         // Inicjalizacja mapy z lokalizacją stacji
         const map = tt.map({

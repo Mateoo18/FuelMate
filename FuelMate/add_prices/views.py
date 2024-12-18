@@ -8,7 +8,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from django.utils import  timezone
-from .models import GasStations, Fuel, StationFuel, PriceHistory, Points,Complain
+
+from stations.models import GasStations, Fuel, StationFuel,Pricehistory,Points,Complain,Users
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import get_messages
@@ -50,15 +51,28 @@ def nearest_stations(request):
 
             # Filtracja najbliższych stacji
             stations = GasStations.objects.raw(
-                'SELECT *, (6371 * acos(cos(radians(%s)) * cos(radians("latitude")) * '
-                'cos(radians("longitude") - radians(%s)) + sin(radians(%s)) * sin(radians("latitude")))) AS distance '
-                'FROM "Gas_Stations" ORDER BY distance LIMIT 5', [latitude, longitude, latitude]
+                '''
+                SELECT *, 
+                       (6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * 
+                       cos(radians(longitude) - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))) 
+                       AS distance 
+                FROM public."Gas_Stations" 
+                ORDER BY distance 
+                LIMIT 5
+                ''',
+                [latitude, longitude, latitude]
             )
+
+            # Iteracja po wynikach zapytania
+            for station in stations:
+                print(f"Stacja: {station.Name}, Odległość: {station.distance} km")
+
         else:
             error = 'Nie można pobrać lokalizacji.'
     serialized_messages = [
         {"message": msg.message, "tags": msg.tags} for msg in get_messages(request)
     ]
+    print("CHUCHUCHCHHCUCH")
     print("Stacje: ",stations)
     return render(request, 'nearest_stations_to_add_price.html', {'stations': stations,'serialized_messages': serialized_messages, 'error': error})
 
@@ -83,7 +97,7 @@ def report_incident(request):
 @login_required
 def update_prices(request, station_id):
     # Pobranie stacji paliw i paliw
-    station = get_object_or_404(GasStations, id_stations=station_id)
+    station = get_object_or_404(GasStations, Station_Id=station_id)
     fuels = Fuel.objects.all()
 
     if request.method == "POST":
@@ -91,8 +105,8 @@ def update_prices(request, station_id):
         # Listę paliw, które nie mają przypisanej ceny
         for fuel in fuels:
             # Pobranie statusu dla danego paliwa
-            status = request.POST.get(f"status_{fuel.Fuel_Id}")
-            new_price = request.POST.get(f"price_{fuel.Fuel_Id}")
+            status = request.POST.get(f"status_{fuel.fuel_id}")
+            new_price = request.POST.get(f"price_{fuel.fuel_id}")
 
             # Jeśli status to "add", sprawdzamy, czy cena została wpisana
             if status == "add" and not new_price:
@@ -106,8 +120,8 @@ def update_prices(request, station_id):
 
         # Iteracja po wszystkich paliwach i przypisanie cen lub statusów
         for fuel in fuels:
-            status = request.POST.get(f"status_{fuel.Fuel_Id}")  # Pobranie wybranego statusu
-            new_price = request.POST.get(f"price_{fuel.Fuel_Id}")  # Pobranie ceny, jeśli jest wprowadzona
+            status = request.POST.get(f"status_{fuel.fuel_id}")  # Pobranie wybranego statusu
+            new_price = request.POST.get(f"price_{fuel.fuel_id}")  # Pobranie ceny, jeśli jest wprowadzona
 
             # Obsługa zależności statusu
             if status == "add" and new_price:
@@ -128,7 +142,7 @@ def update_prices(request, station_id):
                             Update_Date=timezone.now(),
                             user=request.user
                         )
-                    PriceHistory.objects.create(
+                    Pricehistory.objects.create(
                         station=station,
                         fuel=fuel,
                         price=new_price,
@@ -153,7 +167,8 @@ def update_prices(request, station_id):
                     fuel=fuel,
                     defaults={'Price': -1, 'Update_Date': timezone.now(), 'user': request.user}
                 )
-
+        user_instance = Users.objects.get(Username=request.user)
+        print(user_instance)
         # Dodanie punktów za zaktualizowanie cen
         Points.objects.create(
             user=request.user,
@@ -180,22 +195,23 @@ def report_complain(request, station_id):
     subject = f"Gratulacje! Zająłeś 1 miejsce"
     message = f"Gratulacje! Zdobyłeś 1 miejsce w rankingu tygodniowym. Nagroda: 1 zł."
     from_email = "mateusz.nowak.076@gmail.com"
-    email="mateusz.nowak.203@gmail.com"
+    email = "mateusz.nowak.203@gmail.com"
+
     try:
-        send_mail(subject, message, from_email, email, fail_silently=False)
+        send_mail(subject, message, from_email, [email], fail_silently=False)
         print(f"E-mail wysłany do {email}")
     except Exception as e:
         print(f"Błąd wysyłania e-maila do {email}: {e}")
 
-
-
-    station = get_object_or_404(GasStations, id_stations=station_id)
+    # Pobranie stacji z bazy danych
+    station = get_object_or_404(GasStations, Station_Id=station_id)  # Zmieniono na station_id
 
     if request.method == "POST":
         complain_text = request.POST.get("complain_text")
+
         if not complain_text:
             messages.warning(request, "Treść zażalenia nie może być pusta.")
-            return redirect('add_prices:station_details',  id_stations=station_id)
+            return redirect('add_prices:station_details', station_id=station_id)  # Użyj małych liter w station_id
 
         # Zapisanie zażalenia w bazie danych
         Complain.objects.create(
