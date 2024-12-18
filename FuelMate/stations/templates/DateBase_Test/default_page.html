@@ -153,11 +153,18 @@
                 <ul class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'add_prices:nearest_stations' %}">Dodaj Cene Paliwa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'price_history:list_price' %}">Sprawdz Ceny Historyczne</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:profile' %}">Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'price_history:list_price' %}">Historia Cen</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ranking:ranking' %}">Ranking</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:favorite_station' %}">Ulubione stacje</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profil_account:profile' %}">Profil</a></li>
+                    {% if user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-warning text-white px-3" href="{% url 'admin_panel:admin_dashboard' %}" style="font-weight: bold;">Panel Administratora</a>
+                            </li>
+                        {% endif %}
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Please log in</a>
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj się</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -166,7 +173,7 @@
                         <li class="nav-item">
                             <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Wyloguj</button>
                             </form>
                         </li>
                     {% endif %}

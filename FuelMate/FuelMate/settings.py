@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stations',
     'accounts',
+    'admin_panel',
     'profil_account',
     'locate_station',
     'add_prices',
