@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from urllib3 import request
 from django.shortcuts import render, get_object_or_404
-from stations.models import Gas_Stations,Station_Fuel,Price_history,Favorite_Station
+from stations.models import (Gas_Stations,Station_Fuel,Price_history,Favorite_Station,StationRating)
 from datetime import datetime, time
 import json
 from django.shortcuts import render, redirect
@@ -72,13 +72,29 @@ def station_details(request, station_id):
     }
 
     fuel_prices_json_str = json.dumps(fuel_prices_json)
+    station_rating, created = StationRating.objects.get_or_create(id_stations=station)
+    print(f"Station ID: {station.Station_Id}")
+    return render(request, 'deatails.html', {'station': station, 'station_rating': station_rating, 'fuel_prices_now': fuel_prices, 'fuel_prices_old': fuel_prices2,'fuel_prices_json': fuel_prices_json_str, 'is_favorite': is_favorite_station(user_id, station_id)})
 
-    return render(request, 'deatails.html', {'station': station, 'fuel_prices_now': fuel_prices, 'fuel_prices_old': fuel_prices2,'fuel_prices_json': fuel_prices_json_str, 'is_favorite': is_favorite_station(user_id, station_id)})
+def add_station_rating(request, station_id):
+    station = get_object_or_404(Gas_Stations, pk=station_id)
+    station_rating, created = StationRating.objects.get_or_create(id_stations=station)
 
+    if request.method == "POST":
+        rating = float(request.POST.get('rating', 0))
+        if station_rating.rating is None:
+            station_rating.rating = 0
+        if station_rating.quantity is None:
+            station_rating.quantity = 0
+        if rating > 0:
+            new_quantity = station_rating.quantity + 1
+            new_rating = (station_rating.rating * station_rating.quantity + rating) / new_quantity
+            station_rating.rating = new_rating
+            station_rating.quantity = new_quantity
+            station_rating.save()
 
+        return redirect('station_details:station_details', station_id=station_id)
 
-
-
-
+    return render(request, 'deatails.html', {'station': station, 'station_rating': station_rating})
 
 

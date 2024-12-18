@@ -22,7 +22,7 @@
 
     <!-- Formularz aktualizacji cen paliw -->
     <h2>Ceny paliw</h2>
-    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id_stations %}">
+    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id%}">
     {% csrf_token %}
     <table>
         <tr>
