@@ -77,18 +77,6 @@ class Notifications(models.Model):
         managed=False
         db_table = 'Notifications'
 
-class Report(models.Model):
-    Report_Id = models.BigAutoField(db_column='Reports_Id', primary_key=True)
-    User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
-    Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
-    Reported_price = models.FloatField(db_column='Reported_Price')
-    Reported_date = models.DateTimeField(db_column='Report_Date')
-    Comment = models.CharField(db_column='Comment', max_length=100)
-
-    class Meta:
-        managed=False
-        db_table = 'Reports'
 
 class Station_Rev(models.Model):
     Station_Reviews_Id = models.BigAutoField(db_column='Station_Reviews_Id', primary_key=True)
@@ -138,3 +126,16 @@ class Station_Fuel(models.Model):
     class Meta:
         managed=False
         db_table = 'Station_Fuel'
+
+
+
+class Report(models.Model):
+    Report_Id = models.BigAutoField(db_column='id', primary_key=True)
+    User_Id = models.ForeignKey('Users', db_column='user_id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('Gas_Stations', db_column='id_stations',on_delete=models.SET_NULL,null = True)
+    Reported_date = models.DateTimeField(db_column='date_created')
+    Comment = models.CharField(db_column='text', max_length=100)
+
+    class Meta:
+        managed=False
+        db_table = 'complain'

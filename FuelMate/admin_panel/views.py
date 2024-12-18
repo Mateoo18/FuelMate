@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Report
-from .models import Gas_Stations,Fuel,Station_Fuel,Price_history
+
+from stations.models import Users, Favorite_Station, Gas_Stations,Price_history,Fuel,Report
 
 from django.contrib import messages
 from django.contrib.messages import get_messages
