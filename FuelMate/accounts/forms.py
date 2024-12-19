@@ -22,7 +22,7 @@ class UserRegistrationForm(forms.ModelForm):
     last_name = forms.CharField(max_length=150, label="Nazwisko")
     fuel_type = forms.CharField(max_length=150, label="Rodzaj Paliwa")
     city = forms.CharField(max_length=100)
-    postal_code = forms.CharField(
+    Zip = forms.CharField(
         max_length=6,
         help_text="*Format: XX-XXX",
         validators=[

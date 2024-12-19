@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render
-from stations.models import Users, Favorite_Station, Gas_Stations,Price_history,Fuel
+from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
@@ -11,16 +11,16 @@ from datetime import datetime, time
 @login_required  # Ensures the user must be logged in
 def price_history(request):
 
-    stations = Gas_Stations.objects.all()
+    stations = GasStations.objects.all()
     if request.method == 'POST':
         station_id = request.POST.get('station_id')
         if station_id is None:
             messages.error(request, "Nie wybrano stacji.")
             return render(request, 'list_price.html', {'stations': stations})
 
-        station = Gas_Stations.objects.get(Station_Id=station_id)
+        station = GasStations.objects.get(Station_Id=station_id)
         print(station)
-        history_object = Price_history.objects.filter(Station_Id=station.Station_Id)
+        history_object = PriceHistory.objects.filter(Station_Id=station.Station_Id)
         print(history_object)
         fuel_prices = {
             1: [],  # PB95

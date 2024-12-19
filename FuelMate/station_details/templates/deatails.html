@@ -3,8 +3,54 @@
     Szczegóły Stacji: {{ station.Name }}
 {% endblock %}
 {% block content %}
+{% load static %}
+<head>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocena stacji</title>
+    <style>
+        .rating-container {
+    text-align: left; /* Ustawienie tekstu na lewo */
+}
 
+.rating {
+    display: inline-flex; /* Wyświetla gwiazdki w jednej linii */
+    flex-direction: row-reverse; /* Odwraca kolejność renderowania */
+    justify-content: flex-start; /* Wyrównanie do lewej strony */
+    gap: 5px; /* Odstępy między gwiazdkami *//
+}
+        .rating input {
+            display: none;
+        }
 
+        .rating label {
+            font-size: 2rem;
+            color: #ccc;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: color 0.2s;
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #f5b301;
+        }
+
+        .rating input:checked ~ label {
+            color: #f5b301;
+        }
+
+        .rating-container {
+            margin: 20px 0;
+        }
+
+        .rating-info {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
 <div class="container mt-5">
     <div class="row">
         <!-- Lewa kolumna: szczegóły stacji -->
@@ -54,8 +100,17 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Sekcja z historycznymi cenami -->
+<script>
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const ratingValue = star.getAttribute('for').replace('star', '');
+            // Można tutaj wysłać AJAX lub zaktualizować stan na serwerze
+            console.log('Wybrano ocenę: ' + ratingValue);
+        });
+    });
+</script>
+       <!-- Sekcja z historycznymi cenami -->
             <h2 class="mt-4">Historyczne Ceny Paliw</h2>
             <div id="charts-container" class="mt-3">
                 <!-- Wykresy zostaną tutaj wstawione dynamicznie przez Chart.js -->
@@ -72,6 +127,34 @@
                     <div id="map" style="height: 300px;"></div>
                 </div>
             </div>
+            <div class="rating-container">
+    <form method="POST" action="{% url 'station_details:add_station_rating' station.Station_Id %}">
+        {% csrf_token %}
+        <div class="rating">
+            <input type="radio" id="star5" name="rating" value="5" {% if station_rating.rating == 5 %}checked{% endif %}>
+            <label for="star5" title="5 stars">&#9733;</label>
+
+            <input type="radio" id="star4" name="rating" value="4" {% if station_rating.rating == 4 %}checked{% endif %}>
+            <label for="star4" title="4 stars">&#9733;</label>
+
+            <input type="radio" id="star3" name="rating" value="3" {% if station_rating.rating == 3 %}checked{% endif %}>
+            <label for="star3" title="3 stars">&#9733;</label>
+
+            <input type="radio" id="star2" name="rating" value="2" {% if station_rating.rating == 2 %}checked{% endif %}>
+            <label for="star2" title="2 stars">&#9733;</label>
+
+            <input type="radio" id="star1" name="rating" value="1" {% if station_rating.rating == 1 %}checked{% endif %}>
+            <label for="star1" title="1 star">&#9733;</label>
+        </div>
+        <button type="submit">Oceń</button>
+    </form>
+</div>
+
+<!-- Wyświetlanie średniej oceny i liczby opinii -->
+<div class="rating-info">
+    <p>Średnia ocena: {{ station_rating.rating|floatformat:1 }} &#9733;</p>
+    <p>Liczba opinii: {{ station_rating.quantity }}</p>
+</div>
         </div>
     </div>
 </div>
@@ -172,7 +255,16 @@
         marker.setPopup(popup);
         marker.togglePopup();
     });
+document.addEventListener('DOMContentLoaded', () => {
+    const stars = document.querySelectorAll('.star-rating input');
+    const ratingForm = document.querySelector('#ratingForm');
 
+    stars.forEach(star => {
+        star.addEventListener('change', (e) => {
+            console.log(`Wybrano ocenę: ${e.target.value}`);
+        });
+    });
+});
 </script>
 
 {% endblock %}

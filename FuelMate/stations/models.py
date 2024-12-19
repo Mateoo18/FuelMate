@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 class Fuel(models.Model):
     fuel_id = models.BigAutoField(db_column='Fuel_Id', primary_key=True)
     Name = models.CharField(db_column='Name', max_length=100)
@@ -9,11 +9,11 @@ class Fuel(models.Model):
         db_table = 'Fuel'
 
 
-class Gas_Stations(models.Model):
+class GasStations(models.Model):
     Station_Id = models.BigAutoField(db_column='id_stations', primary_key=True)
     Address = models.CharField(db_column='address', max_length=100)
     City = models.CharField(db_column='city', max_length=100)
-    Zip = models.CharField(db_column='postal_code', max_length=100)
+    postal_code = models.CharField(db_column='postal_code', max_length=100)
     Name = models.CharField(db_column='name', max_length=100)
     Latitude = models.FloatField(db_column='latitude')
     Longitude = models.FloatField(db_column='longitude')
@@ -53,10 +53,10 @@ class Users(models.Model):
         db_table = 'auth_user'
 
 
-class Favorite_Station(models.Model):
+class FavoriteStation(models.Model):
     Favorite_Id = models.BigAutoField(db_column='Favorite_Stations_Id', primary_key=True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
 
     class Meta:
         managed=True
@@ -66,7 +66,7 @@ class Favorite_Station(models.Model):
 class Notifications(models.Model):
     Notification_Id = models.BigAutoField(db_column='Notification_Id', primary_key=True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Price_Threshold = models.FloatField(db_column='Price_Threshold')
     Status = models.CharField(db_column='Status', max_length=100)
@@ -80,7 +80,7 @@ class Notifications(models.Model):
 class Report(models.Model):
     Report_Id = models.BigAutoField(db_column='Reports_Id', primary_key=True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Reported_price = models.FloatField(db_column='Reported_Price')
     Reported_date = models.DateTimeField(db_column='Report_Date')
@@ -90,9 +90,9 @@ class Report(models.Model):
         managed=False
         db_table = 'Reports'
 
-class Station_Rev(models.Model):
+class StationRev(models.Model):
     Station_Reviews_Id = models.BigAutoField(db_column='Station_Reviews_Id', primary_key=True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
     Rating = models.FloatField(db_column='Rating')
     Comment = models.CharField(db_column='Comment', max_length=100)
@@ -104,7 +104,7 @@ class Station_Rev(models.Model):
 
 class Promotion(models.Model):
     Promotion_Id = models.BigAutoField(db_column='Promotions_Id', primary_key=True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     User_Id = models.ForeignKey('Users', db_column='User_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Start_Date = models.DateTimeField(db_column='Start_Date')
@@ -117,9 +117,9 @@ class Promotion(models.Model):
 
 
 
-class Price_history(models.Model):
+class PriceHistory(models.Model):
     Price_Id = models.BigAutoField(db_column='Price_History_Id', primary_key=True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Price = models.FloatField(db_column='Price')
     Date = models.DateTimeField(db_column='Change_Date')
@@ -128,9 +128,9 @@ class Price_history(models.Model):
         managed=False
         db_table = 'Price_History'
 
-class Station_Fuel(models.Model):
+class StationFuel(models.Model):
     Station_Fuel_Id = models.BigAutoField(db_column='Station_Fuel_Id', primary_key=True)
-    Station_Id = models.ForeignKey('Gas_Stations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
+    Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Price = models.FloatField(db_column='Price')
     Date = models.DateTimeField(db_column='Update_Date')
@@ -138,3 +138,53 @@ class Station_Fuel(models.Model):
     class Meta:
         managed=False
         db_table = 'Station_Fuel'
+
+
+class StationRating(models.Model):
+    id_stations = models.OneToOneField(
+        GasStations,
+        on_delete=models.CASCADE,
+        db_column='id_stations',
+        related_name='rating',
+        primary_key=True
+    )
+    rating = models.FloatField(null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'station_rating'
+
+class PostalCode(models.Model):
+    zip_code = models.CharField(max_length=10, primary_key=True)  # Klucz główny
+    country = models.CharField(max_length=100)
+    place = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    class Meta:
+        db_table = 'postal_code'  # Nazwa tabeli w bazie danych
+        managed = False  # Django nie zarządza tą tabelą
+
+
+class Complain(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    station = models.ForeignKey('GasStations',db_column='id_stations', on_delete=models.CASCADE)
+    text = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'complain'
+
+
+class Points(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Relacja do modelu User
+    points = models.IntegerField()  # Liczba punktów
+    date = models.DateTimeField(auto_now_add=True)  # Data dodania punktów
+
+
+    class Meta:
+        managed = False
+        db_table = 'points'
