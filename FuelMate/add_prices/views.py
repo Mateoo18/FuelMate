@@ -123,6 +123,12 @@ def update_prices(request, Station_Id):
                             Price=new_price,
                             Date=timezone.now()
                         )
+                    PriceHistory.objects.create(
+                        Station_Id=station,
+                        Fuel_Id=fuel,
+                        Price=new_price,
+                        change_date=timezone.now()
+                    )
                 except ValueError:
                     messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
                     return redirect('add_prices:update_prices', Station_Id=Station_Id)
