@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from urllib3 import request
 from django.shortcuts import render, get_object_or_404
-from stations.models import GasStations, StationFuel, Pricehistory, FavoriteStation, StationRating
+from stations.models import GasStations, StationFuel, PriceHistory, FavoriteStation, StationRating
 from datetime import datetime, time
 import json
 from django.shortcuts import render, redirect
@@ -37,7 +37,7 @@ def station_details(request, station_id):
             fuel_prices[fuel_name].append({"price": fuel.Price, "date": fuel.Date})
 
 
-    history_object = Pricehistory.objects.filter(Station_Id=station_id)
+    history_object = PriceHistory.objects.filter(Station_Id=station_id)
 
     fuel_prices2 = {
         "95": [],

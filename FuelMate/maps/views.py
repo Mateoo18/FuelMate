@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .models import GasStations
+from stations.models import GasStations
 from django.shortcuts import render
 
 def gas_stations_list(request):
@@ -8,7 +8,7 @@ def gas_stations_list(request):
 
     # Serializacja danych do formatu JSON
     data = list(stations.values(
-        "Name", "Address", "City", "Zip", "Phone", "Latitude", "Longitude","Station_Id"
+        "Name", "Address", "City", "postal_code", "Phone", "Latitude", "Longitude","Station_Id"
     ))
 
     return JsonResponse(data, safe=False)

@@ -32,17 +32,17 @@
             {% if stations %}
                 {% for station in stations %}
                     <li class="list-group-item">
-                        <strong>{{ station.name }}</strong><br>
-                        {{ station.address }}<br>
-                        Koordynaty: {{ station.latitude }}, {{ station.longitude }}
+                        <strong>{{ station.Name }}</strong><br>
+                        {{ station.Address }}<br>
+                        Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
                     </li>
                 {% endfor %}
             {% elif nearby_stations %}
                 {% for station in nearby_stations %}
                     <li class="list-group-item">
-                        <strong>{{ station.name }}</strong><br>
-                        {{ station.address }}<br>
-                        Koordynaty: {{ station.latitude }}, {{ station.longitude }}
+                        <strong>{{ station.Name }}</strong><br>
+                        {{ station.Address }}<br>
+                        Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
                     </li>
                 {% endfor %}
             {% else %}
@@ -67,8 +67,8 @@
             <tbody>
                 {% for station in recommended_stations %}
                     <tr>
-                        <td>{{ station.0.name  }}</td>
-                        <td>{{ station.0.address  }}</td>
+                        <td>{{ station.0.Name  }}</td>
+                        <td>{{ station.0.Address  }}</td>
                         <td>{{ station.2 }} km</td>  <!-- Zaokrąglona odległość do 2 miejsc po przecinku -->
                         <td>{{ station.1 }} min</td>
                         <td>{{ station.3 }} /5</td>

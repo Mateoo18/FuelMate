@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render
-from stations.models import Users, FavoriteStation, GasStations,Pricehistory,Fuel
+from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
@@ -20,7 +20,7 @@ def price_history(request):
 
         station = GasStations.objects.get(Station_Id=station_id)
         print(station)
-        history_object = Pricehistory.objects.filter(Station_Id=station.Station_Id)
+        history_object = PriceHistory.objects.filter(Station_Id=station.Station_Id)
         print(history_object)
         fuel_prices = {
             1: [],  # PB95

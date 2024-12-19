@@ -1,6 +1,6 @@
 
 from .models import Fuel, GasStations, Roles, Users, Notifications, Report, StationRev, Promotion, FavoriteStation, \
-    Pricehistory, StationFuel
+    PriceHistory, StationFuel
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import OuterRef, Subquery

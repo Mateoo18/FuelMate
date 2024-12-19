@@ -7,7 +7,7 @@ import requests
 from django.db import connection
 
 from FuelMate.settings import API_KEY_TOM
-from .models import GasStation, PostalCode
+from stations.models import GasStations, PostalCode
 import os
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, sqrt, atan2
@@ -97,11 +97,11 @@ def list_returned_stations(station, latitude, longitude):
 
 def search_stations_by_postal_code(request):
     postal_code = request.GET.get('postal_code', '').strip()
-    stations = GasStation.objects.filter(address__icontains=postal_code)
+    stations = GasStations.objects.filter(address__icontains=postal_code)
     return render(request, 'search.html', {'stations': stations, 'postal_code': postal_code})
 
 def all_stations_view(request):
-    stations = GasStation.objects.all()
+    stations = GasStations.objects.all()
     return render(request, 'search.html', {'stations': stations})
 
 
@@ -117,7 +117,7 @@ def logged_in_view(request):
 
     # Obsługa wyszukiwania po kodzie pocztowym
     if postal_code:
-        stations = list(GasStation.objects.filter(postal_code=postal_code))
+        stations = list(GasStations.objects.filter(postal_code=postal_code))
 
         if len(stations) < 10:
             # Pobierz współrzędne dla kodu pocztowego
@@ -130,7 +130,7 @@ def logged_in_view(request):
             # Jeśli mamy współrzędne, szukaj dodatkowych stacji
             if lat is not None and lon is not None:
                 additional_stations = []
-                all_stations = GasStation.objects.exclude(postal_code=postal_code)
+                all_stations = GasStations.objects.exclude(postal_code=postal_code)
 
                 for station in all_stations:
                     if station.latitude and station.longitude:
@@ -144,7 +144,7 @@ def logged_in_view(request):
     # Obsługa wyszukiwania po lokalizacji użytkownika
     if latitude and longitude:
         latitude, longitude = float(latitude), float(longitude)
-        all_stations = GasStation.objects.all()
+        all_stations = GasStations.objects.all()
 
         for station in all_stations:
             if station.Latitude and station.Longitude:

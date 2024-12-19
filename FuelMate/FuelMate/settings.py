@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'stations',
     'accounts',
     'profil_account',
     'locate_station',
@@ -50,8 +49,7 @@ INSTALLED_APPS = [
     'maps',
     'price_history',
     'station_details',
-
-
+    'stations'
 ]
 
 MIDDLEWARE = [
