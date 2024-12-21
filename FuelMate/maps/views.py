@@ -1,14 +1,14 @@
 from django.http import JsonResponse
-from .models import Gas_Stations
+from stations.models import GasStations
 from django.shortcuts import render
 
 def gas_stations_list(request):
     # Pobranie wszystkich stacji paliw
-    stations = Gas_Stations.objects.all()
+    stations = GasStations.objects.all()
 
     # Serializacja danych do formatu JSON
     data = list(stations.values(
-        "Name", "Address", "City", "Zip", "Phone", "Latitude", "Longitude","Station_Id"
+        "Name", "Address", "City", "postal_code", "Phone", "Latitude", "Longitude","Station_Id"
     ))
 
     return JsonResponse(data, safe=False)

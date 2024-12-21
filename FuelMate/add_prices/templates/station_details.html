@@ -16,24 +16,34 @@
     <!-- Powiadomienia -->
     <div id="notifications"></div>
 
-    <!-- Nagłówek stacji paliw -->
-    <h1>{{ station.name }}</h1>
-    <p><strong>Adres:</strong> {{ station.address }}</p>
+ <!-- Nagłówek stacji paliw -->
+    <h1>{{ station.Name }}</h1>
+    <p><strong>Adres:</strong> {{ station.Address }}</p>
 
     <!-- Formularz aktualizacji cen paliw -->
     <h2>Ceny paliw</h2>
-    <form method="post" action="{% url 'add_prices:update_prices' station_id=station.id_stations %}">
+    <form method="post" action="{% url 'add_prices:update_prices' Station_Id=station.Station_Id %}">
         {% csrf_token %}
         <table>
             <tr>
                 <th>Rodzaj Paliwa</th>
+                <th>Opcja</th>
                 <th>Cena</th>
             </tr>
             {% for fuel in fuels %}
             <tr>
                 <td>{{ fuel.Name }}</td>
                 <td>
-                    <input type="text" name="price_{{ fuel.Fuel_Id }}" placeholder="Wpisz cenę">
+                    <!-- Wybór statusu paliwa -->
+                    <select name="status_{{ fuel.fuel_id }}" class="status-select" data-fuel-id="{{ fuel.fuel_id }}">
+                        <option value="add">Dodaj cenę paliwa</option>
+                        <option value="none">Zabrakło paliwa na stacji</option>
+                        <option value="not_available">Dane paliwo nie występuje na stacji</option>
+                    </select>
+                </td>
+                <td>
+                    <!-- Wprowadzenie ceny -->
+                    <input type="text" name="price_{{ fuel.fuel_id }}" class="price-input" placeholder="Wpisz cenę" data-fuel-id="{{ fuel.fuel_id }}">
                 </td>
             </tr>
             {% endfor %}
@@ -42,8 +52,8 @@
     </form>
 
     <!-- Sekcja zgłaszania zażaleń -->
-    <h2>Zgłoś zażalenie</h2>
-    <form method="post" action="{% url 'add_prices:report_complain' station_id=station.id_stations %}">
+    <h2>Zgłoś zażalenie odnośnie danej stacji</h2>
+    <form method="post" action="{% url 'add_prices:report_complain' Station_Id=station.Station_Id %}">
         {% csrf_token %}
         <textarea name="complain_text" rows="4" cols="50" placeholder="Wpisz swoje zażalenie tutaj..."></textarea><br>
         <button type="submit">Wyślij zażalenie</button>
@@ -59,13 +69,13 @@
 
     <script>
         // Przekazywanie zmiennych z Django do JS
-        const stationLongitude = {{ station.longitude }};
-        const stationLatitude = {{ station.latitude }};
-        const stationName = "{{ station.name|escapejs }}";
-        const stationAddress = "{{ station.address|escapejs }}";
-        const stationCity = "{{ station.city|escapejs }}";
+        const stationLongitude = {{ station.Longitude }};
+        const stationLatitude = {{ station.Latitude }};
+        const stationName = "{{ station.Name|escapejs }}";
+        const stationAddress = "{{ station.Address|escapejs }}";
+        const stationCity = "{{ station.City|escapejs }}";
         const stationPostalCode = "{{ station.postal_code|escapejs }}";
-        const stationPhone = "{{ station.phone|escapejs }}";
+        const stationPhone = "{{ station.Phone|escapejs }}";
 
         // Inicjalizacja mapy z lokalizacją stacji
         const map = tt.map({
@@ -91,7 +101,33 @@
         marker.setPopup(popup);
         marker.togglePopup();
     </script>
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function updatePriceField() {
+                const selects = document.querySelectorAll('.status-select');
+                selects.forEach(select => {
+                    const fuelId = select.dataset.fuelId;
+                    const priceInput = document.querySelector(`.price-input[data-fuel-id="${fuelId}"]`);
+                    const selectedStatus = select.value;
 
+                    if (selectedStatus === "none" || selectedStatus === "not_available") {
+                        priceInput.disabled = true;
+                        priceInput.placeholder = selectedStatus === "none" ? "Nie wpisuj ceny" : "Brak paliwa na stacji";
+                    } else {
+                        priceInput.disabled = false;
+                        priceInput.placeholder = "Wpisz cenę";
+                    }
+                });
+            }
+
+            updatePriceField();
+
+            const statusSelects = document.querySelectorAll('.status-select');
+            statusSelects.forEach(select => {
+                select.addEventListener('change', updatePriceField);
+            });
+        });
+    </script>
     <script>
         // Obsługa powiadomień z Django
         const notifications = document.getElementById('notifications');

@@ -1,6 +1,6 @@
 
 from django.shortcuts import render
-from .models import Points
+from stations.models import Points
 from django.db.models import Sum
 from django.utils.timezone import now
 from datetime import timedelta
