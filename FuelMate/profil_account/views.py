@@ -84,3 +84,19 @@ def remove_favorite_station(request):
 
 
 
+@login_required
+def favorite_station(request):
+    user = request.user
+    try:
+        user_info = Users.objects.get(UserId=user.id)
+    except Users.DoesNotExist:
+        user_info = None
+
+    favorite_station_list = []
+    favorite_stations = FavoriteStation.objects.filter(User_Id=user_info.UserId)
+
+    for station in favorite_stations:
+        station = GasStations.objects.get(Station_Id=station.Station_Id.Station_Id)
+        favorite_station_list.append(station)
+
+    return render(request, 'favorite_station.html', {'favorite_station_list': favorite_station_list})

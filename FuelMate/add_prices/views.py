@@ -40,7 +40,10 @@ def nearest_stations(request):
     stations = []
     error = None
 
-    if request.method == 'POST':
+    if request.user.is_superuser:
+        # Superuser - pokaż wszystkie stacje
+        stations = GasStations.objects.all()
+    elif request.method == 'POST':
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
 
@@ -56,11 +59,18 @@ def nearest_stations(request):
             )
         else:
             error = 'Nie można pobrać lokalizacji.'
+    else:
+        error = 'Musisz podać lokalizację, chyba że jesteś administratorem.'
+
     serialized_messages = [
         {"message": msg.message, "tags": msg.tags} for msg in get_messages(request)
     ]
-    print("Stacje: ",stations)
-    return render(request, 'nearest_stations_to_add_price.html', {'stations': stations,'serialized_messages': serialized_messages, 'error': error})
+    return render(request, 'nearest_stations_to_add_price.html', {
+        'stations': stations,
+        'serialized_messages': serialized_messages,
+        'error': error,
+        'is_superuser': request.user.is_superuser  # Informacja dla szablonu
+    })
 
 def station_to_list(request, Station_Id):
     station = get_object_or_404(GasStations, Station_Id=Station_Id)
@@ -127,7 +137,7 @@ def update_prices(request, Station_Id):
                         Station_Id=station,
                         Fuel_Id=fuel,
                         Price=new_price,
-                        change_date=timezone.now()
+                        Date=timezone.now()
                     )
                 except ValueError:
                     messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
