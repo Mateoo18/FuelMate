@@ -1,0 +1,54 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Panel Administratora{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Panel Administratora</h1>
+    <hr>
+
+    <div class="mt-4 mb-4 text-center">
+        <a href="{% url 'add_prices:nearest_stations' %}" class="btn btn-primary me-2">Dodaj Cenę Paliwa</a>
+        <a href="{% url 'admin_panel:delete_prices' %}" class="btn btn-danger">Usuń Cenę Paliwa</a>
+    </div>
+
+    <div class="row">
+        <!-- Zgłoszenia -->
+        <div class="col-md-6">
+            <h2>Zgłoszenia</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Stacja</th>
+                        <th>Użytkownik</th>
+                        <th>Data zgłoszenia</th>
+                        <th>Komentarz</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complain in complain %}
+                    <tr>
+                        <td>{{ complain.id }}</td>
+                        <td>{{ complain.station.Name }}</td>
+                        <td>{{ complain.user }}</td>
+                        <td>{{ complain.date_created }}</td>
+                        <td>{{ complain.text }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Brak zgłoszeń do wyświetlenia.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Anomalie Cenowe -->
+        <div class="col-md-6" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+            <h2>Anomalie Cenowe</h2>
+            <p>W przyszłości tutaj zostaną wyświetlone dane dotyczące anomalii cenowych.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

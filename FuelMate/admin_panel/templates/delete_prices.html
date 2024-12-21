@@ -1,0 +1,72 @@
+{% extends "accounts/base.html" %}
+
+
+{% block title %}Usuń Historię Cen{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Usuń Historię Cen</h1>
+    <hr>
+
+    <!-- Wyświetlanie wiadomości -->
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Wybór stacji -->
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="station">Wybierz Stację:</label>
+            <select id="station" name="station_id" class="form-control" required>
+                <option value="" disabled selected>Wybierz stację</option>
+                {% for station in stations %}
+                <option value="{{ station.Station_Id }}">{{ station.Name }} - {{ station.Address }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Pokaż Historię Cen</button>
+    </form>
+
+    <!-- Wyświetlanie historii cen -->
+    {% if price_history_records %}
+    <h2>Historia Cen</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Typ Paliwa</th>
+                <th>Cena</th>
+                <th>Data</th>
+                <th>Akcja</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in price_history_records %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ record.Fuel_Id.Name }}</td>
+                <td>{{ record.Price }}</td>
+                <td>{{ record.Date }}</td>
+                <td>
+                    <form method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="record_id" value="{{ record.Price_Id }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Brak rekordów do wyświetlenia.</p>
+    {% endif %}
+</div>
+{% endblock %}

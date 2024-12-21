@@ -54,7 +54,7 @@ def favorite_station_list(request):
     return render(request, 'DateBase_Test/favorite_station_list.html', {'favorite_stations': favorite_stations})
 @login_required
 def price_history_list(request):
-    price_histories = Pricehistory.objects.all()
+    price_histories = PriceHistory.objects.all()
     return render(request, 'DateBase_Test/price_history_list.html', {'price_histories': price_histories})
 @login_required
 def station_fuel_list(request):
