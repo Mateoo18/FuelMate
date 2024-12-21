@@ -23,6 +23,6 @@ The application is built with a **Django backend** and a **HTML/CSS/JavaScript f
 ### Stack
 - **Backend**: Django (Python) for handling requests, data processing, and database interactions.
 - **Frontend**: HTML, CSS, JavaScript for the user interface and dynamic updates.
-- **Database**: PostgreSQL or MySQL for secure data storage.
+- **Database**: PostgreSQL for secure data storage.
 - **External APIs**: Google Maps API for geolocation services and directions.
 
