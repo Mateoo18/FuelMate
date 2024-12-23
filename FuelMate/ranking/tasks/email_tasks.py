@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 def send_reward_email(email, position, reward):
     subject = f"Gratulacje! Zająłeś {position} miejsce"
     message = f"Gratulacje! Zdobyłeś {position} miejsce w rankingu tygodniowym. Nagroda: {reward} zł."
-    from_email = "admin@fuelmate.com"
+    from_email = "fuelmatepoland@gmail.com"
 
     try:
         send_mail(subject, message, from_email, [email], fail_silently=False)

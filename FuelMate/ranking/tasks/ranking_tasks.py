@@ -5,7 +5,7 @@ from django.db.models import Sum
 from django.conf import settings
 from django.core.mail import send_mail
 def process_weekly_ranking():
-    from ..models import Points
+    from stations.models import Points
     today = now()
     start_of_week = today - timedelta(days=today.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
