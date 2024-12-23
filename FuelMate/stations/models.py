@@ -188,3 +188,13 @@ class Points(models.Model):
     class Meta:
         managed = False
         db_table = 'points'
+
+class RecommendStations(models.Model):
+    remomendet_id = models.BigAutoField(primary_key=True)
+    station_id =  models.ForeignKey('GasStations',db_column='station_id', on_delete=models.CASCADE)\
+
+    class Meta:
+        managed = False
+        db_table = 'remomendet_stations'
+
+

@@ -189,18 +189,21 @@
             <thead>
                 <tr>
                     <th>Nazwa</th>
-                    <th>Adres</th>
-                    <th>Paliwo</th>
-                    <th>Cena</th>
+                    <th>Sprawdź ceny</th>
+
                 </tr>
             </thead>
             <tbody>
                 {% for station in recommended_stations %}
                     <tr>
-                        <td>{{ station.station_name }}</td>
-                        <td>{{ station.station_address }}</td>
-                        <td>{{ station.fuel_name }}</td>
-                        <td>{{ station.price }}</td>
+                        <td><strong>{{ station.Name|upper }}</strong></td>
+                    <td>
+                          <a href="{% url 'station_details:station_details' station_id=station.Station_Id %}">Szczegóły</a>
+                    </td>
+
+
+
+
                     </tr>
                 {% endfor %}
             </tbody>
@@ -263,7 +266,7 @@
                     const stationDetails = `
                         <strong>${station.Name}</strong><br>
                         ${station.Address}, ${station.City}<br>
-                        Kod pocztowy: ${station.Zip}<br>
+                        Kod pocztowy: ${station.postal_code}<br>
                         Telefon: ${station.Phone}<br>
                         <a href="/station_details/details/${station.Station_Id}/" target="_blank">Zobacz szczegóły</a>
                     `;

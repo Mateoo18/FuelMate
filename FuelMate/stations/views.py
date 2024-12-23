@@ -1,6 +1,5 @@
 
-from .models import Fuel, GasStations, Roles, Users, Notifications, Report, StationRev, Promotion, FavoriteStation, \
-    PriceHistory, StationFuel
+from .models import Fuel, GasStations, Roles, Users, Notifications, Report, StationRev, Promotion, FavoriteStation,RecommendStations,PriceHistory, StationFuel
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import OuterRef, Subquery
@@ -17,7 +16,10 @@ def fuel_list(request):
     fuels = Fuel.objects.all()
     return render(request, 'DateBase_Test/fuel_list.html', {'fuels': fuels})
 def home(request):
-    return render(request, 'DateBase_Test/default_page.html')
+    list = RecommendStations.objects.all()
+    station_ids = [station.station_id for station in list]
+    print(station_ids)
+    return render(request, 'DateBase_Test/default_page.html', {'recommended_stations': station_ids})
 
 @login_required
 def gas_station_list(request):
