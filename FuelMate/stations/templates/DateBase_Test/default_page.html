@@ -184,31 +184,35 @@
 
     <!-- Polecane stacje -->
     <div class="recommended-table-container">
-        <h4>Polecane stacje paliw:</h4>
-        <table class="table table-striped table-sm">
-            <thead>
+    <h4>Polecane stacje paliw:</h4>
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Najniższa cena dla</th>
+                <th>Sprawdź ceny</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in recommendations %}
                 <tr>
-                    <th>Nazwa</th>
-                    <th>Sprawdź ceny</th>
-
-                </tr>
-            </thead>
-            <tbody>
-                {% for station in recommended_stations %}
-                    <tr>
-                        <td><strong>{{ station.Name|upper }}</strong></td>
+                    <td><strong>{{ station.station_name.Name|upper }}</strong></td>
+                    <td>{{ station.fuel_type.Name }}</td>
                     <td>
-                          <a href="{% url 'station_details:station_details' station_id=station.Station_Id %}">Szczegóły</a>
+                        {% if station.station_name %}
+                            <a href="{% url 'station_details:station_details' station_id=station.station_name.Station_Id %}">Szczegóły</a>
+                        {% else %}
+                            <td>Brak stacji</td>
+                        {% endif %}
                     </td>
+                </tr>
+            {% endfor %}
 
 
+        </tbody>
+    </table>
+</div>
 
-
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
     <!-- Kontener na szczegóły stacji -->
     <div id="station-details" class="station-details-container">
