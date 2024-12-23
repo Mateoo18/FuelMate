@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse_lazy, reverse
 from stations.models import Users, FavoriteStation, GasStations
-
+from .models import Profile
 
 from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required

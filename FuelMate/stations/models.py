@@ -59,7 +59,7 @@ class FavoriteStation(models.Model):
     Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
 
     class Meta:
-        managed=True
+        managed=False
         db_table = 'Favorite_Stations'
 
 
