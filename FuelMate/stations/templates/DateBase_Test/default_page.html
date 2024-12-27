@@ -183,7 +183,7 @@
     </nav>
 
     <!-- Polecane stacje -->
-    <div class="recommended-table-container">
+    <<div class="recommended-table-container">
     <h4>Polecane stacje paliw:</h4>
     <table class="table table-striped table-sm">
         <thead>
@@ -212,7 +212,6 @@
         </tbody>
     </table>
 </div>
-
 
     <!-- Kontener na szczegóły stacji -->
     <div id="station-details" class="station-details-container">
@@ -298,22 +297,6 @@
             const content = document.getElementById('station-details-content');
             const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${station.Latitude},${station.Longitude}`;
 
-                    const stationDetails = `
-                        <strong>${station.Name}</strong><br>
-                        ${station.Address}, ${station.City}<br>
-                        Kod pocztowy: ${station.postal_code}<br>
-                        Telefon: ${station.Phone}<br>
-                        <a href="/station_details/details/${station.Station_Id}/" target="_blank">Zobacz szczegóły</a>
-                    `;
-                    content.innerHTML = stationDetails;
-                    detailsContainer.classList.add('show'); // Pokaż animację
-                });
-
-
-
-
-            });
-        }
             const stationDetails = `
                 <strong>${station.Name}</strong><br>
                 ${station.Address}, ${station.City}<br>
