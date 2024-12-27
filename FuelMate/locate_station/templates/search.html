@@ -3,18 +3,57 @@
 {% block title %}Wyszukiwanie Stacji Paliw{% endblock %}
 
 {% block content %}
+    <style>
+    /* Styl dla kontenera z wynikami autouzupełniania */
+    .autocomplete-results {
+        position: absolute;
+        z-index: 1000;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        max-height: 300px;  /* Maksymalna wysokość wyników */
+        overflow-y: auto;    /* Dodanie scrolla, jeśli wyników jest za dużo */
+        width: 100%;
+        margin-top: 2px;
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    /* Styl dla pojedynczego elementu w wynikach autouzupełniania */
+    .autocomplete-item {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    /* Styl dla elementu najechanego myszką */
+    .autocomplete-item:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Stylowanie inputa, by pasował do wyników autouzupełniania */
+    #search-input {
+        position: relative;
+        width: 100%;
+        padding-right: 40px; /* Na wypadek, gdyby było wbudowane pole na lokalizację */
+    }
+
+</style>
+
 <div class="container">
     <h2 class="text-center">Witamy na stronie użytkownika!</h2>
 
     <!-- Sekcja wyszukiwania -->
     <section class="mt-4">
-        <h3>Wyszukaj stację paliw lub zlokalizuj mnie:</h3>
+    <h3>Wyszukaj stację paliw lub zlokalizuj mnie:</h3>
         <form method="get" action="" class="row g-2 align-items-center mb-4">
             {% csrf_token %}
             <div class="col-auto flex-grow-1">
                 <!-- Pole wyszukiwania z autouzupełnianiem -->
                 <input type="text" id="search-input" name="search" placeholder="Wprowadź nazwę stacji paliw" class="form-control" value="{{ request.GET.search }}" oninput="getSuggestions()">
-                <div id="autocomplete-results" style="display: none;"></div> <!-- Lista wyników -->
+
+                <!-- Kontener na wyniki autouzupełniania -->
+                <div id="autocomplete-results" class="autocomplete-results" style="display: none;"></div> <!-- Lista wyników -->
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Szukaj</button>
@@ -26,6 +65,7 @@
     </section>
 
     <!-- Wyniki wyszukiwania -->
+    {% if stations or nearby_stations %}
     <section>
         <h3>Wyniki wyszukiwania:</h3>
         <ul class="list-group mb-4">
@@ -50,8 +90,10 @@
             {% endif %}
         </ul>
     </section>
+    {% endif %}
 
     <!-- Polecane stacje -->
+    {% if recommended_stations %}
     <section>
         <h3>Polecane stacje paliw:</h3>
         <table class="table table-striped">
@@ -77,22 +119,52 @@
             </tbody>
         </table>
     </section>
+    {% endif %}
 
     <!-- Przycisk powrotu -->
     <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary mt-3 w-100">Wróć</a>
+
+    <!-- Sekcja Aktualności -->
+    <!-- Sekcja Aktualności -->
+<section class="mt-5">
+    <h3>Aktualności ze świata paliw:</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="news/fuel-prices/">Nowości na rynku paliw w Polsce: Zmiany w cenach paliw na stacjach</a>
+            <p class="text-muted">Przeczytaj o najnowszych zmianach w cenach paliw na stacjach paliw w Polsce oraz prognozach na nadchodzące miesiące. Jakie zmiany czekają nas w najbliższym czasie?</p>
+        </li>
+        <li class="list-group-item">
+            <a href="news/cheapest-station">Jak wybrać najtańszą stację paliw w okolicy?</a>
+            <p class="text-muted">Dowiedz się, jakie czynniki wpływają na cenę paliwa w różnych sieciach stacji paliw. Porównujemy oferty i doradzamy, jak zaoszczędzić na tankowaniu.</p>
+        </li>
+        <li class="list-group-item">
+            <a href="news/safety-station">Bezpieczeństwo na stacjach paliw: Co warto wiedzieć?</a>
+            <p class="text-muted">Zabezpieczenia, które powinny być stosowane na stacjach paliw, oraz jak zachować ostrożność podczas wizyty na stacji paliw. Przeczytaj o najnowszych wytycznych BHP.</p>
+        </li>
+        <li class="list-group-item">
+            <a href="news/regulations-station">Zmiany w regulacjach dotyczących stacji paliw</a>
+            <p class="text-muted">Co nowego w przepisach związanych z działaniem stacji paliw? Jakie zmiany w regulacjach wprowadzają nowelizacje prawa dotyczącego infrastruktury paliwowej?</p>
+        </li>
+        <li class="list-group-item">
+            <a href="news/technology-station">Nowoczesne technologie w stacjach paliw: Automatyzacja i e-płatności</a>
+            <p class="text-muted">Nowe technologie w branży paliwowej, w tym automatyczne dystrybutory paliw i rozwój systemów płatności elektronicznych na stacjach paliw. Jakie zmiany czekają nas w najbliższej przyszłości?</p>
+        </li>
+    </ul>
+</section>
+
+
+
 </div>
 
 <script>
-    const apiKey = "jtKVQ8BkAQTF1XZDAfQUfvW2ZGyC4fvK"  // Zastąp swoim kluczem API TomTom
+    const apiKey = "jtKVQ8BkAQTF1XZDAfQUfvW2ZGyC4fvK";  // Zastąp swoim kluczem API TomTom
     const searchInput = document.getElementById('search-input');
     const resultsDiv = document.getElementById('autocomplete-results');
     let userLatitude = null;
     let userLongitude = null;
 
-
     async function getSuggestions() {
         const query = searchInput.value;
-
 
         if (query.length < 2) {
             resultsDiv.style.display = 'none';
@@ -120,7 +192,6 @@
 
             const data = await response.json();
 
-
             if (data.results.length > 0) {
                 resultsDiv.innerHTML = '';
                 data.results.forEach(result => {
@@ -140,12 +211,10 @@
         }
     }
 
-
     function selectSuggestion(result, originalQuery) {
         // Zamiana adresu na współrzędne
         const latitude = result.position.lat;
         const longitude = result.position.lon;
-
 
         const url = new URL(window.location.href);
         url.searchParams.set('latitude', latitude);
@@ -161,7 +230,6 @@
                 userLatitude = position.coords.latitude;
                 userLongitude = position.coords.longitude;
 
-
                 const url = new URL(window.location.href);
                 url.searchParams.delete('postal_code');
                 url.searchParams.set('latitude', userLatitude);
@@ -175,11 +243,11 @@
         }
     }
 
-
     document.addEventListener('click', (event) => {
         if (!event.target.closest('#search-input') && !event.target.closest('#autocomplete-results')) {
             resultsDiv.style.display = 'none';
         }
     });
 </script>
+
 {% endblock %}

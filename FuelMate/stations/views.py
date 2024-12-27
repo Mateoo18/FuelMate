@@ -1,6 +1,5 @@
 
-from .models import Fuel, GasStations, Roles, Users, Notifications, Report, StationRev, Promotion, FavoriteStation, \
-    PriceHistory, StationFuel
+from .models import Fuel, GasStations, Roles, Users, Notifications, Report, StationRev, Promotion, FavoriteStation,RecommendStations,PriceHistory, StationFuel
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import OuterRef, Subquery
@@ -17,7 +16,21 @@ def fuel_list(request):
     fuels = Fuel.objects.all()
     return render(request, 'DateBase_Test/fuel_list.html', {'fuels': fuels})
 def home(request):
-    return render(request, 'DateBase_Test/default_page.html')
+    list = RecommendStations.objects.all()
+    result_list = []
+
+    # Iterujemy po rekomendowanych stacjach
+    for recommendation in list:
+        # Tworzymy słownik z nazwą stacji i typem paliwa
+        station_fuel = {
+            'station_name': recommendation.station_id,
+            'fuel_type': recommendation.fuel_id
+        }
+
+        # Dodajemy słownik do naszej listy
+        result_list.append(station_fuel)
+
+    return render(request, 'DateBase_Test/default_page.html', {'recommendations': result_list})
 
 @login_required
 def gas_station_list(request):

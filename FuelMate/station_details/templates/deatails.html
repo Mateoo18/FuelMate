@@ -49,6 +49,35 @@
             font-size: 1.2rem;
             margin-top: 10px;
         }
+        .popup {
+    display: none; /* Popup ukryty na starcie */
+    position: fixed;
+    top: 10%; /* Przeniesienie wyżej strony */
+    left: 50%;
+    transform: translate(-50%, -30%);
+    width: 350px; /* Można dostosować szerokość */
+    padding: 20px;
+    background-color: white;
+    border: 2px solid #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center; /* Centrowanie tekstu w popupie */
+}
+
+.popup-content {
+    font-size: 1.5rem; /* Większa czcionka */
+    font-weight: bold; /* Pogrubienie tekstu */
+    color: #333; /* Przyjemny odcień szarości */
+}
+
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #555; /* Kolor przycisku zamykania */
+}
     </style>
 </head>
 <div class="container mt-5">
@@ -59,8 +88,8 @@
             <ul class="list-group">
                 <li class="list-group-item"><strong>Adres:</strong> {{ station.Address }}, {{ station.City }}</li>
                 <li class="list-group-item"><strong>Telefon:</strong> {{ station.Phone }}</li>
-                <li class="list-group-item"><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</li>
-                <li class="list-group-item"><strong>Kod Pocztowy:</strong> {{ station.Zip }}</li>
+                <!--<li class="list-group-item"><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</li>-->
+                <li class="list-group-item"><strong>Kod Pocztowy:</strong> {{ station.postal_code }}</li>
             </ul>
             <h1 class="display-4 mb-4">
                 Szczegóły Stacji: {{ station.Name }}
@@ -85,19 +114,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for fuel_type, prices in fuel_prices_now.items %}
-                            <tr>
-                                <td>{{ fuel_type }}</td>
-                                <td>
-                                    {% if prices %}
-                                        {{ prices.0.price }} PLN
-                                    {% else %}
-                                        Brak danych
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
+                    {% for fuel_type, prices in fuel_prices_now.items %}
+                        <tr>
+                            <td>{{ fuel_type }}</td>
+                            <td>
+                                {% if prices and prices.0.price > 0 %}
+                                    {{ prices.0.price }} PLN
+                                {% elif prices.0.price == 0 %}
+                                    Obcnie brakuje paliwa na danej stacji
+                                {% else %}
+                                    Paliwo nie występuje na danej stacji
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+
                 </table>
             </div>
 <script>
@@ -128,7 +161,7 @@
                 </div>
             </div>
             <div class="rating-container">
-    <form method="POST" action="{% url 'station_details:add_station_rating' station.Station_Id %}">
+    <form id="ratingForm" method="POST" action="{% url 'station_details:add_station_rating' station.Station_Id %}">
         {% csrf_token %}
         <div class="rating">
             <input type="radio" id="star5" name="rating" value="5" {% if station_rating.rating == 5 %}checked{% endif %}>
@@ -152,8 +185,12 @@
 
 <!-- Wyświetlanie średniej oceny i liczby opinii -->
 <div class="rating-info">
-    <p>Średnia ocena: {{ station_rating.rating|floatformat:1 }} &#9733;</p>
-    <p>Liczba opinii: {{ station_rating.quantity }}</p>
+    {% if station_rating %}
+        <p>Średnia ocena: {{ station_rating.rating|floatformat:1 }} &#9733;</p>
+        <p>Liczba opinii: {{ station_rating.quantity }}</p>
+    {% else %}
+        <p>Brak ocen dla tej stacji.</p>
+    {% endif %}
 </div>
         </div>
     </div>
@@ -189,7 +226,7 @@
                         data: fuelPrices[fuelType].map(item => item.price),
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.4,
+                        tension: 0,
                     }]
                 };
 
@@ -266,5 +303,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingForm = document.getElementById('ratingForm');
+        const popupMessage = document.getElementById('popupMessage');
+        const popupText = document.getElementById('popupText');
 
+        ratingForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Zatrzymanie domyślnego działania formularza
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Błąd sieci lub serwera');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.already_rated) {
+                    popupText.textContent = "Już oceniłeś tę stację.";
+                } else if (data.success) {
+                    popupText.textContent = data.message; // "Dziękujemy za ocenę stacji!"
+                }
+                popupMessage.style.display = 'block'; // Pokazanie popupu
+            })
+            .catch(error => {
+                console.error('Błąd:', error);
+                popupText.textContent = "Wystąpił błąd. Spróbuj ponownie później.";
+                popupMessage.style.display = 'block';
+            });
+        });
+    });
+
+    // Zamknięcie popupu i odświeżenie strony
+    function closePopup() {
+        document.getElementById('popupMessage').style.display = 'none';
+        location.reload(); // Odświeżenie strony
+    }
+</script>
+<div id="popupMessage" class="popup" style="display:none;">
+    <div class="popup-content">
+        <span class="close-popup" onclick="closePopup()">&times;</span>
+        <p id="popupText"></p>
+    </div>
+</div>
 {% endblock %}

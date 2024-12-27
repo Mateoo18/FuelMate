@@ -93,11 +93,14 @@ def report_incident(request):
 
 @login_required
 def update_prices(request, Station_Id):
+    print("hello")
     # Pobranie stacji paliw i listy paliw
     station = get_object_or_404(GasStations, Station_Id=Station_Id)
     fuels = Fuel.objects.all()
 
     if request.method == "POST":
+        print("Dane POST:", request.POST)
+        print("Zalogowany użytkownik:", request.user)
         missing_prices = []
 
         # Sprawdzenie brakujących cen
@@ -125,21 +128,29 @@ def update_prices(request, Station_Id):
                     if station_fuel:
                         station_fuel.Price = new_price
                         station_fuel.Date = timezone.now()
+                        station_fuel.user = request.user
+                        print("id uzytkownika: ",station_fuel.user)
                         station_fuel.save()
+                        print(f"Zaktualizowano cenę: {new_price} dla paliwa {fuel.Name}")
                     else:
                         StationFuel.objects.create(
                             Station_Id=station,
                             Fuel_Id=fuel,
                             Price=new_price,
-                            Date=timezone.now()
+                            Date=timezone.now(),
+                            user = request.user
                         )
+                        print(f"Utworzono nową cenę: {new_price} dla paliwa {fuel.Name}")
                     PriceHistory.objects.create(
                         Station_Id=station,
                         Fuel_Id=fuel,
                         Price=new_price,
-                        Date=timezone.now()
+                        Date=timezone.now(),
+                        user = request.user
                     )
+                    print(f"historia dla: {request.user} dla paliwa {fuel.Name}")
                 except ValueError:
+                    print("????")
                     messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
                     return redirect('add_prices:update_prices', Station_Id=Station_Id)
 
@@ -178,18 +189,6 @@ def update_prices(request, Station_Id):
 
 @login_required
 def report_complain(request, Station_Id):
-    subject = f"Gratulacje! Zająłeś 1 miejsce"
-    message = f"Gratulacje! Zdobyłeś 1 miejsce w rankingu tygodniowym. Nagroda: 1 zł."
-    from_email = "mateusz.nowak.076@gmail.com"
-    email=["mateusz.nowak.203@gmail.com"]
-    try:
-        send_mail(subject, message, from_email, email, fail_silently=False)
-        print(f"E-mail wysłany do {email}")
-    except Exception as e:
-        print(f"Błąd wysyłania e-maila do {email}: {e}")
-
-
-
     station = get_object_or_404(GasStations, Station_Id=Station_Id)
 
     if request.method == "POST":
