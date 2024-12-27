@@ -1,11 +1,87 @@
 {% extends "accounts/base.html" %}
 
 {% block title %}Ranking Tygodniowy{% endblock %}
-{% load static %}
-{% block content %}
-    <h1>Ranking Tygodniowy</h1>
 
-    <link rel="stylesheet"  href="{% static 'style.css' %}">
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Tygodniowy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            padding: 20px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 10px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        td {
+            background-color: #ecf0f1;
+            border-bottom: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover td {
+            background-color: #dfe6e9;
+        }
+
+        p {
+            text-align: center;
+            font-size: 1.2em;
+            color: #95a5a6;
+        }
+
+        .rank-item {
+            font-weight: bold;
+        }
+
+        .gold {
+            background-color: #ffd700 !important; /* Złoty kolor */
+            color: black;
+        }
+
+        .silver {
+            background-color: #c0c0c0 !important; /* Srebrny kolor */
+            color: black;
+        }
+
+        .bronze {
+            background-color: #cd7f32 !important; /* Brązowy kolor */
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ranking Tygodniowy</h1>
 
     {% if ranking %}
         <table>
@@ -18,15 +94,23 @@
             </thead>
             <tbody>
                 {% for rank in ranking %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td class="rank-item">{{ rank.user__username }}</td>
-                        <td>{{ rank.total_points }}</td>
-                    </tr>
+                   <tr>
+    <td class="{% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+        {{ forloop.counter }}
+    </td>
+    <td class="rank-item {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+        {{ rank.user__username }}
+    </td>
+    <td class="{% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+        {{ rank.total_points }}
+    </td>
+</tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
         <p>Brak wyników w tym tygodniu.</p>
     {% endif %}
+</body>
+</html>
 {% endblock %}

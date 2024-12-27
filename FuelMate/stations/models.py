@@ -59,7 +59,7 @@ class FavoriteStation(models.Model):
     Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
 
     class Meta:
-        managed=True
+        managed=False
         db_table = 'Favorite_Stations'
 
 
@@ -122,8 +122,8 @@ class PriceHistory(models.Model):
     Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Price = models.FloatField(db_column='Price')
-    Date = models.DateTimeField(db_column='Change_Date')
-
+    Date = models.DateTimeField(db_column='Change_Date',auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     class Meta:
         managed=False
         db_table = 'Price_History'
@@ -133,8 +133,8 @@ class StationFuel(models.Model):
     Station_Id = models.ForeignKey('GasStations', db_column='Station_Id',on_delete=models.SET_NULL,null = True)
     Fuel_Id = models.ForeignKey('Fuel', db_column='Fuel_Id',on_delete=models.SET_NULL,null = True)
     Price = models.FloatField(db_column='Price')
-    Date = models.DateTimeField(db_column='Update_Date')
-
+    Date = models.DateTimeField(db_column='Update_Date',auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     class Meta:
         managed=False
         db_table = 'Station_Fuel'
@@ -188,3 +188,34 @@ class Points(models.Model):
     class Meta:
         managed = False
         db_table = 'points'
+
+class Warning(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    station = models.ForeignKey('stations.GasStations', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField(blank=True, null=True)  # Opis anomalii
+    points = models.IntegerField(default=0)  # Liczba punktów ostrzeżeń
+
+    class Meta:
+        managed = False
+        db_table = 'warning'
+class RatingRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    station = models.ForeignKey('GasStations', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'station')  # Zapewnia, że jeden użytkownik może ocenić stację tylko raz
+        db_table = 'rating_record'
+        managed = False
+class RecommendStations(models.Model):
+    remomendet_id = models.BigAutoField(primary_key=True)
+    station_id =  models.ForeignKey('GasStations',db_column='station_id', on_delete=models.CASCADE)
+    fuel_id = models.ForeignKey('Fuel', db_column='fuel_id', on_delete=models.SET_NULL, null=True, blank=True)
+
+
+    class Meta:
+        managed = False
+        db_table = 'remomendet_stations'
+
+

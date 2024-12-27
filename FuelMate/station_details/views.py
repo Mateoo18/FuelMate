@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from urllib3 import request
 from django.shortcuts import render, get_object_or_404
-from stations.models import GasStations, StationFuel, PriceHistory, FavoriteStation, StationRating
+from stations.models import GasStations, StationFuel, PriceHistory, FavoriteStation, StationRating, RatingRecord
 from datetime import datetime, time
 import json
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.contrib import messages
 from django.http import JsonResponse
 def station_details(request, station_id):
     station = get_object_or_404(GasStations, Station_Id=station_id)
@@ -72,29 +74,55 @@ def station_details(request, station_id):
     }
 
     fuel_prices_json_str = json.dumps(fuel_prices_json)
-    station_rating, created = StationRating.objects.get_or_create(id_stations=station)
+    station_rating=StationRating.objects.filter(id_stations=station).first()
     print(f"Station ID: {station.Station_Id}")
-    return render(request, 'deatails.html', {'station': station, 'station_rating': station_rating, 'fuel_prices_now': fuel_prices, 'fuel_prices_old': fuel_prices2,'fuel_prices_json': fuel_prices_json_str, 'is_favorite': is_favorite_station(user_id, station_id)})
+    return render(request, 'deatails.html', {'station': station,'station_rating':station_rating,  'fuel_prices_now': fuel_prices, 'fuel_prices_old': fuel_prices2,'fuel_prices_json': fuel_prices_json_str, 'is_favorite': is_favorite_station(user_id, station_id)})
+
 
 def add_station_rating(request, station_id):
+    print("Adding Station Rating")
     station = get_object_or_404(GasStations, pk=station_id)
-    station_rating, created = StationRating.objects.get_or_create(id_stations=station)
+    station_rating = StationRating.objects.filter(id_stations=station).first()
+
+    # Sprawdzenie, czy użytkownik już ocenił
+    if RatingRecord.objects.filter(user=request.user, station=station).exists():
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({"already_rated": True})  # Dla popup
+        else:
+            messages.warning(request, "Już oceniłeś tę stację.")
+            return redirect('station_details:station_details', station_id=station_id)
 
     if request.method == "POST":
-        rating = float(request.POST.get('rating', 0))
-        if station_rating.rating is None:
-            station_rating.rating = 0
-        if station_rating.quantity is None:
-            station_rating.quantity = 0
-        if rating > 0:
-            new_quantity = station_rating.quantity + 1
-            new_rating = (station_rating.rating * station_rating.quantity + rating) / new_quantity
-            station_rating.rating = new_rating
-            station_rating.quantity = new_quantity
-            station_rating.save()
+        # Pobranie oceny z POST
+        rating = request.POST.get('rating')
+        print("RATING:: ", rating)
+        if rating:
+            rating = float(rating)
+            if rating > 0:
+                # Pobranie istniejącego rekordu lub utworzenie nowego
+                station_rating, created = StationRating.objects.get_or_create(
+                    id_stations=station,
+                    defaults={'rating': 0, 'quantity': 0}
+                )
 
+                # Aktualizacja oceny
+                new_quantity = station_rating.quantity + 1
+                new_rating = (station_rating.rating * station_rating.quantity + rating) / new_quantity
+                station_rating.rating = new_rating
+                station_rating.quantity = new_quantity
+                station_rating.save()
+
+                # Zapisanie logu oceny
+                RatingRecord.objects.create(user=request.user, station=station)
+
+                # Odpowiedź w przypadku AJAX
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({"success": True, "message": "Dziękujemy za ocenę stacji!"})
+
+                messages.success(request, "Dziękujemy za ocenę stacji!")
+                return redirect('station_details:station_details', station_id=station_id)
+
+        # Brak oceny w POST
+        messages.error(request, "Nie wybrano oceny.")
         return redirect('station_details:station_details', station_id=station_id)
-
     return render(request, 'deatails.html', {'station': station, 'station_rating': station_rating})
-
-

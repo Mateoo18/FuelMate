@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib.auth.password_validation import validate_password
-
+from .models import Profile
 
 class UserRegistrationForm(forms.ModelForm):
     username = forms.CharField(
@@ -20,9 +20,9 @@ class UserRegistrationForm(forms.ModelForm):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=30, label="Imię")
     last_name = forms.CharField(max_length=150, label="Nazwisko")
-    fuel_type = forms.CharField(max_length=150, label="Rodzaj Paliwa")
-    city = forms.CharField(max_length=100)
-    Zip = forms.CharField(
+    fuel_type = forms.CharField(max_length=150, label="Preferowany Rodzaj Paliwa")
+    city = forms.CharField(max_length=100, label="Miasto")
+    postal_code = forms.CharField(
         max_length=6,
         help_text="*Format: XX-XXX",
         validators=[
@@ -31,7 +31,8 @@ class UserRegistrationForm(forms.ModelForm):
                 message="Zły kod pocztowy! Kod musi mieć format XX-XXX, np. 01-234.",
                 code='invalid_postal_code'
             )
-        ]
+        ],
+        label="Kod Pocztowy"
     )
 
     class Meta:
