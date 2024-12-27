@@ -208,3 +208,14 @@ class RatingRecord(models.Model):
         unique_together = ('user', 'station')  # Zapewnia, że jeden użytkownik może ocenić stację tylko raz
         db_table = 'rating_record'
         managed = False
+class RecommendStations(models.Model):
+    remomendet_id = models.BigAutoField(primary_key=True)
+    station_id =  models.ForeignKey('GasStations',db_column='station_id', on_delete=models.CASCADE)
+    fuel_id = models.ForeignKey('Fuel', db_column='fuel_id', on_delete=models.SET_NULL, null=True, blank=True)
+
+
+    class Meta:
+        managed = False
+        db_table = 'remomendet_stations'
+
+

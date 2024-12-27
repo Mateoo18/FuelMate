@@ -114,19 +114,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for fuel_type, prices in fuel_prices_now.items %}
-                            <tr>
-                                <td>{{ fuel_type }}</td>
-                                <td>
-                                    {% if prices %}
-                                        {{ prices.0.price }} PLN
-                                    {% else %}
-                                        Brak danych
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
+                    {% for fuel_type, prices in fuel_prices_now.items %}
+                        <tr>
+                            <td>{{ fuel_type }}</td>
+                            <td>
+                                {% if prices and prices.0.price > 0 %}
+                                    {{ prices.0.price }} PLN
+                                {% elif prices.0.price == 0 %}
+                                    Obcnie brakuje paliwa na danej stacji
+                                {% else %}
+                                    Paliwo nie występuje na danej stacji
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+
                 </table>
             </div>
 <script>
@@ -222,7 +226,7 @@
                         data: fuelPrices[fuelType].map(item => item.price),
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.4,
+                        tension: 0,
                     }]
                 };
 

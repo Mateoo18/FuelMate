@@ -1,3 +1,5 @@
+from gc import get_objects
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -5,6 +7,9 @@ from datetime import timedelta
 from django.utils.timezone import now
 from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel,Complain,Warning,StationFuel
 from collections import defaultdict
+
+from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel,Complain,StationFuel,RecommendStations
+
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.utils.timezone import now
@@ -73,6 +78,29 @@ from django.db.models import Sum
 
 def detect_price_anomalies():
     print("Rozpoczęcie analizy anomalii cenowych...")
+def refresh_stations(request):
+    stations = StationFuel.objects.all()
+    cheapest_fuels = {}
+
+    for station in stations:
+        if station.Price > 0:
+            fuel_id = station.Fuel_Id
+
+            if fuel_id not in cheapest_fuels or station.Price < cheapest_fuels[fuel_id]['price']:
+                cheapest_fuels[fuel_id] = {
+                    'station': station,
+                    'price': station.Price
+                }
+    print(cheapest_fuels)
+    RecommendStations.objects.all().delete()
+    for fuel_id, data in cheapest_fuels.items():
+        station = data['station']
+        RecommendStations.objects.create(
+            station_id=station.Station_Id,
+            fuel_id=fuel_id,
+        )
+
+    return render(request, 'admin_panel/admin_dashboard.html')
 
     # Pobranie wszystkich cen z ostatnich X dni (np. 1 dzień)
     prices = PriceHistory.objects.filter(Date__gte=now() - timedelta(days=1))
