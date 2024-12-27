@@ -7,12 +7,12 @@ import requests
 from django.db import connection
 
 from FuelMate.settings import API_KEY_TOM
-from stations.models import GasStations, PostalCode
+from stations.models import GasStations, PostalCode,StationRating
 import os
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, sqrt, atan2
 from django.shortcuts import render
-
+from django.views import View
 API_KEY = os.getenv("API_KEY_TOM_TOM")
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -26,29 +26,56 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return distance
 
 def calcuate_stations_score(stations, time_in_minutes, distance,max_distance=1000, min_price=4.2, max_price=6.5,max_time=1000,):
+
+
     if distance is None:
         distance = 0  # Możesz ustawić domyślną wartość, np. 0 km
 
     if time_in_minutes is None:
         time_in_minutes = 0
 
+    rank = ranging_get(stations, stations)
+    rating = 0
+    quantity = 0
+    if len(rank) > 0:
+        rating = rank[0].rating
+        print(rating)
+        quantity = rank[0].quantity
+        print(quantity)
+
+    if rating is None:
+        rating = 0
+    if quantity is None:
+        quantity = 0
+
+    virtual_reviews = 5
+    default_rating = 4.0
+
+    if quantity == 0:
+        adjusted_rating = default_rating
+    else:
+        adjusted_rating = (rating * quantity + default_rating * virtual_reviews) / (quantity + virtual_reviews)
+
     fuel_price = random.uniform(min_price, max_price)
 
-    distance_score = max(0.0, min(5.0, 5.0 - (distance / max_distance) * 5))  # im mniejsza odległość, tym wyższa ocena
+    distance_score = max(0.0, min(5.0, 5.0 - (distance / max_distance) * 5))
 
-    # Normalizujemy czas przejazdu (mniej minut to lepsza stacja)
-    time_score = max(0.0, min(5.0, 5.0 - (time_in_minutes / max_time) * 5))  # im mniej minut, tym wyższa ocena
 
-    # Normalizujemy cenę paliwa (niższa cena to lepsza stacja)
+    time_score = max(0.0, min(5.0, 5.0 - (time_in_minutes / max_time) * 5))
+
+
     price_score = max(0.0, min(5.0, 5.0 - (
-                (fuel_price - min_price) / (max_price - min_price)) * 5))  # im tańsze paliwo, tym wyższa ocena
+                (fuel_price - min_price) / (max_price - min_price)) * 5))
 
     # Wagi dla każdego kryterium
     distance_weight = 0.05
     time_weight = 0.5
     price_weight = 0.5
+    rank_weight = 0.1
 
-    score = (distance_score * distance_weight) + (time_score * time_weight) + (price_score * price_weight)
+
+    score = (distance_score * distance_weight) + (time_score * time_weight) + (price_score * price_weight) + (adjusted_rating * rank_weight)
+
     return score
 
 
@@ -104,6 +131,13 @@ def all_stations_view(request):
     stations = GasStations.objects.all()
     return render(request, 'search.html', {'stations': stations})
 
+def ranging_get(request,station):
+    station_id = station.Station_Id
+    rank = StationRating.objects.filter(id_stations=station_id)
+    return rank
+
+
+
 
 @login_required
 def logged_in_view(request):
@@ -155,13 +189,13 @@ def logged_in_view(request):
         # Posortuj według odległości
         recommended_stations = sorted(nearby_stations, key=lambda x: x[1])[:5]
         nearby_stations = sorted(nearby_stations, key=lambda x: x[1])[:5]  # Max 5 najbliższych
-        print(recommended_stations)
+        #print(recommended_stations)
 
         for station in recommended_stations:
             travel_time,distance = list_returned_stations(station[0], latitude, longitude)
             score = calcuate_stations_score(station[0], travel_time/60, distance)
             recommended_stations_re.append((station[0], round(travel_time/60), round(distance/1000,2),round(score,2)))
-        print(recommended_stations_re)
+        #print(recommended_stations_re)
 
 
 
@@ -230,3 +264,28 @@ def search_stations(request):
 def some_view(request):
     # Przekazanie API_KEY do szablonu HTML
     return render(request, 'search.html', {'api_key': API_KEY_TOM})
+
+# Widok dla strony "Zmiany w cenach paliw"
+class NewsFuelPricesView(View):
+    def get(self, request):
+        return render(request, 'fuel_prices.html')
+
+# Widok dla strony "Jak wybrać najtańszą stację paliw"
+class NewsCheapestStationView(View):
+    def get(self, request):
+        return render(request, 'cheapest_station.html')
+
+# Widok dla strony "Bezpieczeństwo na stacjach paliw"
+class NewsSafetyStationView(View):
+    def get(self, request):
+        return render(request, 'safety_station.html')
+
+# Widok dla strony "Zmiany w regulacjach dotyczących stacji paliw"
+class NewsRegulationsStationView(View):
+    def get(self, request):
+        return render(request, 'regulations_station.html')
+
+# Widok dla strony "Nowoczesne technologie w stacjach paliw"
+class NewsTechnologyStationView(View):
+    def get(self, request):
+        return render(request, 'technology_station.html')
