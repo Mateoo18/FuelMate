@@ -21,24 +21,6 @@ current_time = now()
 def admin_dashboard(request):
     if not request.user.is_staff:
         return HttpResponseForbidden("Nie masz dostępu do tej strony.")
-
-    # Pobieramy wszystkie zgłoszenia z tabeli `Reports`
-    complain= Complain.objects.all()
-    detect_price_anomalies()
-    warnings = Warning.objects.filter(points__gte=1)  # Ostrzeżenia do wyświetlenia
-    user_points = Warning.objects.values('user').annotate(total_points=Sum('points'))
-
-    # Krytyczni użytkownicy (≥ 3 punkty)
-    critical_users = []
-    for user_data in user_points:
-        if user_data['total_points'] >= 3:
-            critical_user = {
-                "user": Users.objects.get(pk=user_data['user']),
-                "total_points": user_data['total_points']
-            }
-            critical_users.append(critical_user)
-
-    # Przekazujemy dane do szablonu
     complain = Complain.objects.all()
     average_prices = (
         PriceHistory.objects
@@ -63,10 +45,28 @@ def admin_dashboard(request):
         )
         .select_related('Station_Id', 'Fuel_Id')
     )
+
+    # Pobieramy wszystkie zgłoszenia z tabeli `Reports`
+    complain= Complain.objects.all()
+    detect_price_anomalies()
+    warnings = Warning.objects.filter(points__gte=1)  # Ostrzeżenia do wyświetlenia
+    user_points = Warning.objects.values('user').annotate(total_points=Sum('points'))
+
+    # Krytyczni użytkownicy (≥ 3 punkty)
+    critical_users = []
+    for user_data in user_points:
+        if user_data['total_points'] >= 3:
+            critical_user = {
+                "user": Users.objects.get(pk=user_data['user']),
+                "total_points": user_data['total_points']
+            }
+            critical_users.append(critical_user)
+
+    # Przekazujemy dane do szablonu
     return render(request, 'admin_panel/admin_dashboard.html', {
         'complain': complain,
         'warnings': warnings,
-        'critical_users': critical_users
+        'critical_users': critical_users,
         'anomalies': anomalies,
     })
 
