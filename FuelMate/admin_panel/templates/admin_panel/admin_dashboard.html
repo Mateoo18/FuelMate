@@ -45,10 +45,35 @@
         </div>
 
         <!-- Anomalie Cenowe -->
-        <div class="col-md-6" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
-            <h2>Anomalie Cenowe</h2>
-            <p>W przyszłości tutaj zostaną wyświetlone dane dotyczące anomalii cenowych.</p>
-        </div>
+        <div class="col-md-6" style="border: 2px dashed #ccc; padding: 20px;">
+    <h2>Anomalie Cenowe</h2>
+    {% if anomalies %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stacja</th>
+                <th>Paliwo</th>
+                <th>Cena</th>
+                <th>Średnia Cena</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for anomaly in anomalies %}
+            <tr>
+                <td>{{ anomaly.Station_Id.Name }}</td>
+                <td>{{ anomaly.Fuel_Id.Name }}</td>
+                <td>{{ anomaly.Price }}</td>
+                <td>{{ anomaly.avg_price }}</td>
+                <td>{{ anomaly.Date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center">Brak anomalii cenowych do wyświetlenia.</p>
+    {% endif %}
+    </div>
     </div>
 </div>
 {% endblock %}

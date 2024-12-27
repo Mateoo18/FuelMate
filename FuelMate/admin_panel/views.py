@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-
+from django.db.models import Avg, F, ExpressionWrapper, FloatField
 from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel,Complain
 
 from django.contrib import messages
@@ -9,16 +9,35 @@ from django.contrib.messages import get_messages
 
 @login_required
 def admin_dashboard(request):
-    # Sprawdzamy, czy użytkownik ma uprawnienia administratora
     if not request.user.is_staff:
         return HttpResponseForbidden("Nie masz dostępu do tej strony.")
-
-    # Pobieramy wszystkie zgłoszenia z tabeli `Reports`
-    complain= Complain.objects.all()
-
-    # Przekazujemy dane do szablonu
+    complain = Complain.objects.all()
+    average_prices = (
+        PriceHistory.objects
+        .values('Fuel_Id')
+        .annotate(avg_price=Avg('Price'))
+    )
+    avg_price_map = {item['Fuel_Id']: item['avg_price'] for item in average_prices}
+    anomalies = (
+        PriceHistory.objects
+        .annotate(
+            avg_price=ExpressionWrapper(
+                F('Fuel_Id'),
+                output_field=FloatField()
+            ),
+            deviation=ExpressionWrapper(
+                F('Price') - F('avg_price'),
+                output_field=FloatField()
+            )
+        )
+        .filter(
+            deviation__gt=1.1 * F('avg_price')
+        )
+        .select_related('Station_Id', 'Fuel_Id')
+    )
     return render(request, 'admin_panel/admin_dashboard.html', {
         'complain': complain,
+        'anomalies': anomalies,
     })
 
 

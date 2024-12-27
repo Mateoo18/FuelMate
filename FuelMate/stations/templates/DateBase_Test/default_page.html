@@ -213,6 +213,7 @@
         <div id="station-details-content" class="text-muted text-center">
             Kliknij na marker na mapie, aby zobaczyć szczegóły.
         </div>
+
     </div>
 
     <!-- Przycisk do lokalizacji stacji -->
@@ -243,41 +244,70 @@
                 return [];
             }
         }
-
         async function addGasStationMarkers() {
-            const stations = await fetchGasStations();
-            if (!stations.length) {
-                console.warn("No gas stations available to display.");
-                return;
-            }
+    const stations = await fetchGasStations();
+    if (!stations.length) {
+        console.warn("No gas stations available to display.");
+        return;
+    }
 
-            stations.forEach(station => {
-                const marker = new tt.Marker()
-                    .setLngLat([station.Longitude, station.Latitude])
-                    .addTo(map);
+    stations.forEach(station => {
+        let logoPath = '/static/images/logos/default2.png';
 
-                marker.getElement().addEventListener('click', async () => {
-                    const detailsContainer = document.getElementById('station-details');
-                    const content = document.getElementById('station-details-content');
-
-                    const stationDetails = `
-                        <strong>${station.Name}</strong><br>
-                        ${station.Address}, ${station.City}<br>
-                        Kod pocztowy: ${station.Zip}<br>
-                        Telefon: ${station.Phone}<br>
-                        <a href="/station_details/details/${station.Station_Id}/" target="_blank">Zobacz szczegóły</a>
-                    `;
-                    content.innerHTML = stationDetails;
-                    detailsContainer.classList.add('show'); // Pokaż animację
-                });
-
-
-
-
-            });
+        if (station.Name.toLowerCase().includes('orlen')) {
+            logoPath = '/static/images/logos/orlen.png';
+        } else if (station.Name.toLowerCase().includes('shell')) {
+            logoPath = '/static/images/logos/shell.png';
+        } else if (station.Name.toLowerCase().includes('bp')) {
+            logoPath = '/static/images/logos/bp.png';
+        } else if (station.Name.toLowerCase().includes('circle')) {
+            logoPath = '/static/images/logos/circle.png';
+        } else if (station.Name.toLowerCase().includes('lotos')) {
+            logoPath = '/static/images/logos/lotos.jpg';
+        } else if (station.Name.toLowerCase().includes('arge')) {
+            logoPath = '/static/images/logos/arge.jpg';
+        }  else if (station.Name.toLowerCase().includes('moya')) {
+            logoPath = '/static/images/logos/moya.jpg';
         }
 
-        addGasStationMarkers();
+
+        const markerElement = document.createElement('div');
+        markerElement.style.backgroundImage = `url(${logoPath})`;
+        markerElement.style.backgroundSize = 'cover';
+        markerElement.style.width = '32px';
+        markerElement.style.height = '32px';
+        markerElement.style.borderRadius = '50%';
+        markerElement.style.border = '2px solid white';
+        markerElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)';
+
+        const marker = new tt.Marker({
+            element: markerElement
+        })
+            .setLngLat([station.Longitude, station.Latitude])
+            .addTo(map);
+
+        marker.getElement().addEventListener('click', async () => {
+            const detailsContainer = document.getElementById('station-details');
+            const content = document.getElementById('station-details-content');
+            const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${station.Latitude},${station.Longitude}`;
+
+            const stationDetails = `
+                <strong>${station.Name}</strong><br>
+                ${station.Address}, ${station.City}<br>
+                Kod pocztowy: ${station.Zip}<br>
+                Telefon: ${station.Phone}<br>
+                <a href="/station_details/details/${station.Station_Id}/" target="_blank">Zobacz szczegóły</a>
+                <a href="${googleMapsLink}" target="_blank" class="btn btn-success btn-sm mt-2">Wyznacz trasę w Google Maps</a>
+            `;
+            content.innerHTML = stationDetails;
+            detailsContainer.classList.add('show');
+        });
+    });
+}
+
+addGasStationMarkers();
+
+
     </script>
 
     <!-- Modal logowania -->
