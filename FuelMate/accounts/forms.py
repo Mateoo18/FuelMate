@@ -20,7 +20,7 @@ class UserRegistrationForm(forms.ModelForm):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=30, label="Imię")
     last_name = forms.CharField(max_length=150, label="Nazwisko")
-    fuel_type = forms.CharField(max_length=150, label="Rodzaj Paliwa")
+    fuel_type = forms.CharField(max_length=150, label="Preferowany Rodzaj Paliwa")
     city = forms.CharField(max_length=100, label="Miasto")
     postal_code = forms.CharField(
         max_length=6,

@@ -27,6 +27,16 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='FavoriteStation',
+            fields=[
+                ('Favorite_Id', models.BigAutoField(db_column='Favorite_Stations_Id', primary_key=True, serialize=False)),
+            ],
+            options={
+                'db_table': 'Favorite_Stations',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
             name='Fuel',
             fields=[
                 ('fuel_id', models.BigAutoField(db_column='Fuel_Id', primary_key=True, serialize=False)),
@@ -43,7 +53,7 @@ class Migration(migrations.Migration):
                 ('Station_Id', models.BigAutoField(db_column='id_stations', primary_key=True, serialize=False)),
                 ('Address', models.CharField(db_column='address', max_length=100)),
                 ('City', models.CharField(db_column='city', max_length=100)),
-                ('Zip', models.CharField(db_column='postal_code', max_length=100)),
+                ('postal_code', models.CharField(db_column='postal_code', max_length=100)),
                 ('Name', models.CharField(db_column='name', max_length=100)),
                 ('Latitude', models.FloatField(db_column='latitude')),
                 ('Longitude', models.FloatField(db_column='longitude')),
@@ -197,16 +207,6 @@ class Migration(migrations.Migration):
                 'db_table': 'station_rating',
                 'managed': False,
             },
-        ),
-        migrations.CreateModel(
-            name='Profile',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('fuel_type', models.CharField(default='Gaz', max_length=50)),
-                ('city', models.CharField(max_length=100)),
-                ('postal_code', models.CharField(max_length=6)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
         ),
         migrations.CreateModel(
             name='FavoriteStation',
