@@ -83,8 +83,17 @@ def DataBase_Test(request):
 def station_details_ajax(request, station_id):
     print("station")
 
+    # Pobieranie danych stacji
     station = get_object_or_404(GasStations, Station_Id=station_id)
-    print(station)
-    html_content = render(request, "DateBase_Test/station_details_partia.html", {'station': station}).content
-    return HttpResponse(html_content, content_type='text/html')
 
+    # Generowanie linku do Google Maps
+    google_maps_link = f"https://www.google.pl/maps/dir//{station.Latitude},{station.Longitude}"
+    print("Generated Google Maps Link:", google_maps_link)
+
+    # Renderowanie szablonu
+    html_content = render(request, "DateBase_Test/station_details_partia.html", {
+        'station': station,
+        'google_maps_link': google_maps_link  # Dodanie linku do kontekstu
+    }).content
+
+    return HttpResponse(html_content, content_type='text/html')

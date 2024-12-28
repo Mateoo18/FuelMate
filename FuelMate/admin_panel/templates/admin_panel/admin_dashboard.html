@@ -65,10 +65,7 @@
         </div>
         <p class="mt-2 text-center">Odświeżanie w toku...</p>
     </div>
-        <div class="mt-4 mb-4 text-center">
-            <a href="{% url 'add_prices:nearest_stations' %}" class="btn btn-primary me-2">Dodaj Cenę Paliwa</a>
-            <a href="{% url 'admin_panel:delete_prices' %}" class="btn btn-danger">Usuń Cenę Paliwa</a>
-        </div>
+
 
         <div class="row">
             <!-- Zgłoszenia -->
@@ -131,9 +128,34 @@
             <!-- Wysokie ceny -->
             <div class="col-md-6 mb-4">
                 <div class="panel panel-info shadow p-3 bg-info rounded text-dark">
-                    <h3>Wysokie Ceny</h3>
+                    <h3>Anomalie Cenowe</h3>
                     <div class="scrollable">
-                        <p>Brak danych do wyświetlenia.</p>
+                        {% if anomalies %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Stacja</th>
+                                    <th>Paliwo</th>
+                                    <th>Cena</th>
+                                    <th>Średnia Cena</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for anomaly in anomalies %}
+                                <tr>
+                                    <td>{{ anomaly.Station_Id.Name }}</td>
+                                    <td>{{ anomaly.Fuel_Id.Name }}</td>
+                                    <td>{{ anomaly.Price }}</td>
+                                    <td>{{ anomaly.avg_price }}</td>
+                                    <td>{{ anomaly.Date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="text-center">Brak anomalii cenowych do wyświetlenia.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
