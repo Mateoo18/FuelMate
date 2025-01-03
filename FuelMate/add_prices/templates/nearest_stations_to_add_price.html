@@ -3,39 +3,178 @@
 {% block title %}Najbliższe Stacje Paliw{% endblock %}
 
 {% block content %}
-    <h2>Najbliższe stacje paliw</h2>
+<head>
+    <style>
+    .containertt {
+    max-width: 900px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 60px auto 220px auto; /* Wyśrodkowanie */
+    display: block; /* Umożliwia wyśrodkowanie */
+}
+
+.page-title {
+    text-align: center;
+    color: Green;
+    margin-bottom: 20px;
+}
+
+/* Powiadomienia */
+.notifications-container {
+    margin-bottom: 20px;
+}
+
+.notification {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.notification.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.notification.error {
+    background-color: yellow;
+    color: yellow;
+    border: 1px solid #f5c6cb;
+}
+
+/* Formularz i przycisk */
+#button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#locate-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#locate-button:hover {
+    background-color: #218838;
+}
+
+/* Lista stacji */
+.stations-container {
+    margin-top: 20px;
+}
+
+.station-card {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.station-card p {
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.station-card a {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #fff;
+    background: #007bff;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.station-card a:hover {
+    background: #0056b3;
+}
+
+/* Tekst informacyjny */
+.info-text {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+}
+
+/* Link do profilu */
+.btn-secondary {
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #6c757d;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .station-card {
+        padding: 10px;
+    }
+
+    #locate-button {
+        font-size: 14px;
+    }
+}
+        </style>
+</head>
+<div class="containertt">
+    <h2 class="page-title">Najbliższe stacje paliw</h2>
 
     <!-- Powiadomienia -->
-    <div id="notifications">
-        <!-- Tutaj będą wyświetlane powiadomienia -->
+    <div id="notifications" class="notifications-container">
+        <!-- Powiadomienia będą dynamicznie dodawane tutaj -->
     </div>
 
     <!-- Formularz lokalizacji -->
-    <div id="button-container">
+    <div id="button-container" class="text-center">
         <form method="post" action="{% url 'add_prices:nearest_stations' %}">
             {% csrf_token %}
-            <button id="locate-button" type="button" onclick="getLocation()">Zlokalizuj mnie</button>
+            <button id="locate-button" type="button" class="btn btn-primary" onclick="getLocation()">Zlokalizuj mnie</button>
             <input type="hidden" name="latitude" id="latitude">
             <input type="hidden" name="longitude" id="longitude">
         </form>
     </div>
 
     <!-- Lista stacji -->
-    <div id="stations-list">
+    <div id="stations-list" class="stations-container">
         {% if stations %}
             {% for station in stations %}
-                <div>
-                    <p>{{ station.Name }} - {{ station.Address }}</p>
-                    <a href="{% if station.Station_Id %}{% url 'add_prices:update_prices' station.Station_Id %}{% else %}# {% endif %}">Zmień cenę</a>
+                <div class="station-card">
+                    <p><strong>{{ station.Name }}</strong></p>
+                    <p>{{ station.Address }}</p>
+                    <a href="{% if station.Station_Id %}{% url 'add_prices:update_prices' station.Station_Id %}{% else %}#{% endif %}" class="btn btn-secondary">Zmień cenę</a>
                 </div>
             {% endfor %}
         {% elif error %}
-            <p>{{ error }}</p>
+            <div class="alert alert-warning">{{ error }}</div>
         {% else %}
-            <p>Wyszukaj najbliższe stacje klikając przycisk "Zlokalizuj mnie".</p>
+            <p class="info-text">Wyszukaj najbliższe stacje klikając przycisk "Zlokalizuj mnie".</p>
         {% endif %}
     </div>
 
+
+</div>
     <script>
         function getLocation() {
             document.getElementById("latitude").value = "";
@@ -68,5 +207,5 @@
             setTimeout(() => div.remove(), 5000);
         });
     </script>
-    <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary">Wróć do Profilu</a>
+
 {% endblock %}
