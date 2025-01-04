@@ -76,7 +76,7 @@ def delete_prices(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("Nie masz dostępu do tej strony.")
 
-    stations = GasStations.objects.all()
+    stations = GasStations.objects.all().order_by('Name')
     price_history_records = None
 
     if request.method == 'POST':

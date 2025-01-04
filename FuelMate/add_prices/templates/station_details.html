@@ -143,6 +143,10 @@
             // Usuń powiadomienie po 5 sekundach
             setTimeout(() => div.remove(), 5000);
         });
+        window.onload = function() {
+    // Upewnij się, że nie ma przewijania do elementu mapy
+    window.scrollTo(0, 0);  // Przewija stronę na początek po załadowaniu
+}
     </script>
     <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary">Wróć do Profilu</a>
 {% endblock %}

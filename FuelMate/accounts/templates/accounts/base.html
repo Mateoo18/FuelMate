@@ -41,13 +41,160 @@
             color: #d4d4d4;
         }
     </style>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+     <meta name="csrf-token" content="{{ csrf_token }}">
+   <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@;0,300;0,400;0,500;0,600;0,700;0,800&display=swap');
+
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    scroll-padding-top: 1rem;
+    scroll-behavior: smooth;
+    list-style: none;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.logo1{
+    margin-top: 0.8rem;
+  font-size: 1.2rem;
+  font-weight:700;
+  color: #000000;
+
+}
+.logo1 span{
+  color: var(--main-color);
+}
+:root {
+    --main-color: #32de84;
+    --text-color: black;
+    --bg-color: #fff;
+}
+
+.logout-button {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+.footer {
+    background: #505050;
+    color: #f6f6f6;
+    margin-top: 5rem;
+    margin-bottom: -10px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 8.5rem;
+}
+
+.footer-container .logo1 {
+    color: black;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.footer-container .logo1:hover {
+    color: black;
+}
+
+.footer-container .footer-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-box h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    margin-top: 1rem; /* Przestrzeń nad napisami */
+}
+
+.footer-box a {
+    text-decoration: none; /* Usunięcie podkreślenia */
+    color: #C0C0C0;
+    margin-bottom: 10px;
+}
+
+.footer-box a:hover {
+    color: var(--main-color);
+}
+
+.social {
+    display: flex;
+    align-items: center;
+}
+
+.social a {
+    font-size: 24px;
+    color: var(--bg-color);
+    margin-right: 1rem;
+}
+
+.social a:hover {
+    color: var(--main-color);
+}
+
+.copyright {
+    margin-top: 3px;
+    padding: 20px;
+    text-align: center;
+    color: var(--bg-color);
+    background: #505050;
+}
+.custom-header {
+    background: #505050; /* Gradient od niebieskiego do ciemnoniebieskiego */
+    color: white;
+    padding: 1rem 0; /* Wewnętrzne marginesy */
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lekki cień */
+    border-bottom: 3px solid #34d399; /* Akcentująca linia */
+}
+
+/* Stylizacja linku */
+.logo-link {
+    text-decoration: none;
+}
+
+/* Stylizacja logo */
+.logo {
+    font-family: 'Roboto', sans-serif; /* Nowoczesny font */
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* "Fuel" stylizacja */
+.fuel {
+    color: black;
+}
+
+/* "Mate" stylizacja */
+.mate {
+    color: #34d399; /* Jasny zielony */
+}
+
+/* Dodanie efektu hover */
+.logo-link:hover .mate {
+    color: #10b981; /* Trochę ciemniejszy zielony na hover */
+}
+</style>
 </head>
 <body class="bg-light">
-   <header class="bg-dark text-white p-3 text-center position-relative">
-        <a href="{% url 'stations:default_page' %}" class="text-white text-decoration-none">
-            <h1>FuelMate</h1>
-        </a>
-    </header>
+   <header class="custom-header">
+    <!-- Link do strony głównej -->
+    <a href="{% url 'statrions:home' %}" class="logo-link">
+        <h1 class="logo">
+            <span class="fuel">Fuel</span><span class="mate">Mate</span>
+        </h1>
+    </a>
+</header>
 
     <!-- Pasek nawigacyjny -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -96,11 +243,44 @@
         {% endblock %}
     </main>
 
-    <footer class="text-center mt-5 mb-3 text-muted">
-        <p>&copy; {{ year }} FuelMate</p>
-    </footer>
-
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+<section class="footer">
+        <div class="footer-container container" >
+            <div class="footer-box">
+                <a href="{% url 'statrions:home' %}" class="logo1">Fuel<span>Mate</span></a>
+                <div class="social">
+                    <a href="https://github.com/Mateoo18/FuelMate"> <i class='bx bxl-github' > </i> </a>
+                    <a href="#"> <i class='bx bxl-facebook' > </i> </a>
+                    <a href="#"> <i class='bx bxl-twitter' > </i> </a>
+
+                </div>
+                </div>
+                <div class="footer-box">
+                    <h3>Strona</h3>
+                    <a href="{% url 'statrions:home' %}">Strona Główna</a>
+                    <a href="{% url 'add_prices:nearest_stations' %}">Dodaj Ceny Paliwa</a>
+                    <a href="{% url 'price_history:list_price' %}">Historia Cen</a>
+                    <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
+                    <a href="{% url 'profil_account:add_favorite_station' %}">Ulubione Stacje</a>
+                    <a href="{% url 'profil_account:profile' %}">Profil</a>
+                </div>
+                <div class="footer-box">
+                    <h3>Prywatność</h3>
+                    <a href="#">Polityka Prywatnośći</a>
+                    <a href="#">Polityka Zwrotów</a>
+                    <a href="#">Cookies</a>
+                </div>
+                <div class="footer-box">
+                    <h3>Kontakt</h3>
+                    <p>Gmail: fuelmatepoland@gmail.com</p>
+
+                </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; FuelMate Wszelkie prawa zastrzeżone</p>
+        </div>
+    </section>
 </body>
 </html>
