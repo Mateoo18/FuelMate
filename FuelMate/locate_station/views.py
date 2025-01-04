@@ -70,12 +70,12 @@ def calcuate_stations_score(stations, time_in_minutes, distance,max_distance=100
     # Wagi dla każdego kryterium
     distance_weight = 0.05
     time_weight = 0.5
-    price_weight = 0.5
+    price_weight = 0.44
     rank_weight = 0.1
 
 
     score = (distance_score * distance_weight) + (time_score * time_weight) + (price_score * price_weight) + (adjusted_rating * rank_weight)
-
+    score = max(0.0, min(5.0, score))
     return score
 
 
