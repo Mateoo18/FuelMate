@@ -11,7 +11,9 @@ from datetime import datetime, time
 @login_required  # Ensures the user must be logged in
 def price_history(request):
 
-    stations = GasStations.objects.all()
+    stations = GasStations.objects.all().order_by('Name')
+
+
     if request.method == 'POST':
         station_id = request.POST.get('station_id')
         if station_id is None:

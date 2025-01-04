@@ -15,7 +15,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 @login_required
 def logged_in_view(request):
-    return redirect(reverse_lazy('statrions:home'))
+    return redirect(reverse_lazy('stations:default_page'))
 
 
 def register_view(request):
@@ -48,5 +48,5 @@ class LoginModalView(LoginView):
 
 class CustomLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, "Zostałeś pomyślnie wylogowany!")
+        messages.success(request, "")
         return super().dispatch(request, *args, **kwargs)

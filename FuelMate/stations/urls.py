@@ -4,11 +4,12 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 
-app_name = 'statrions'
+app_name = 'stations'
 
 urlpatterns = [
     path('fuel/', views.fuel_list, name='fuel_list'),
-    path('', views.home, name='home'),
+    path('', views.home, name='default_page'),
+    #path('default_page/', views.home, name='default_page'),
     path('gas_station/', views.gas_station_list, name='gas_station_list'),
     path('role/', views.role_list, name='role_list'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),

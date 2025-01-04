@@ -1,2 +1,5 @@
 /env/
 /FuelMate/.env
+pycache/
+*.pyc
+__pycache__/

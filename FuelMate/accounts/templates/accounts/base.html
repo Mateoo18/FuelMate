@@ -5,6 +5,42 @@
     <title>{% block title %}Moja Aplikacja{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .navbar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 2;
+            max-width: 80%;
+        }
+        .navbar .navbar-brand {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar .navbar-brand:hover {
+            color: #d4d4d4;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            font-size: 1rem;
+            margin-right: 15px;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #d4d4d4;
+        }
+    </style>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
      <meta name="csrf-token" content="{{ csrf_token }}">
    <style>
@@ -153,12 +189,53 @@
 <body class="bg-light">
    <header class="custom-header">
     <!-- Link do strony głównej -->
-    <a href="{% url 'statrions:home' %}" class="logo-link">
+    <a href="{% url 'stations:default_page' %}" class="logo-link">
         <h1 class="logo">
             <span class="fuel">Fuel</span><span class="mate">Mate</span>
         </h1>
     </a>
 </header>
+
+    <!-- Pasek nawigacyjny -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'stations:default_page' %}">FuelMate</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'nearest_stations' %}active{% endif %}"
+                           href="{% url 'add_prices:nearest_stations' %}">Dodaj Cene Paliwa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'list_price' %}active{% endif %}"
+                           href="{% url 'price_history:list_price' %}">Historia Cen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'weekly_ranking' %}active{% endif %}"
+                           href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'favorite_station' %}active{% endif %}"
+                           href="{% url 'profil_account:favorite_station' %}">Ulubione stacje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+                           href="{% url 'profil_account:profile' %}">Profil</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}"
+                           href="{% url 'accounts:login' %}">Zaloguj</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 
     <main class="container mt-5">
         {% block content %}
@@ -172,7 +249,7 @@
 <section class="footer">
         <div class="footer-container container" >
             <div class="footer-box">
-                <a href="{% url 'statrions:home' %}" class="logo1">Fuel<span>Mate</span></a>
+                <a href="{% url 'stations:default_page' %}" class="logo1">Fuel<span>Mate</span></a>
                 <div class="social">
                     <a href="https://github.com/Mateoo18/FuelMate"> <i class='bx bxl-github' > </i> </a>
                     <a href="#"> <i class='bx bxl-facebook' > </i> </a>
@@ -182,7 +259,7 @@
                 </div>
                 <div class="footer-box">
                     <h3>Strona</h3>
-                    <a href="{% url 'statrions:home' %}">Strona Główna</a>
+                    <a href="{% url 'stations:default_page' %}">Strona Główna</a>
                     <a href="{% url 'add_prices:nearest_stations' %}">Dodaj Ceny Paliwa</a>
                     <a href="{% url 'price_history:list_price' %}">Historia Cen</a>
                     <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
