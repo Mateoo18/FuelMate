@@ -9,19 +9,36 @@ class UserRegistrationForm(forms.ModelForm):
     username = forms.CharField(
         max_length=150,
         help_text="*Maksymalnie 150 znaków. Można używać liter, cyfr oraz znaków @/./+/-/_",
-        label="Nazwa użytkownika"
+        label="Nazwa użytkownika",
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Dodano form-control
     )
     password1 = forms.CharField(
         label='Hasło',
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),  # Dodano form-control
         help_text="*Hasło musi mieć conajmniej 8 znaków, zawierać dużą literę oraz znak specjalny."
     )
-    password2 = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput)
-    email = forms.EmailField()
-    first_name = forms.CharField(max_length=30, label="Imię")
-    last_name = forms.CharField(max_length=150, label="Nazwisko")
-    fuel_type = forms.CharField(max_length=150, label="Preferowany Rodzaj Paliwa")
-    city = forms.CharField(max_length=100, label="Miasto")
+    password2 = forms.CharField(
+        label='Powtórz hasło',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})  # Dodano form-control
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'})  # Dodano form-control
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        label="Imię",
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Dodano form-control
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        label="Nazwisko",
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Dodano form-control
+    )
+    city = forms.CharField(
+        max_length=100,
+        label="Miasto",
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Dodano form-control
+    )
     postal_code = forms.CharField(
         max_length=6,
         help_text="*Format: XX-XXX",
@@ -32,7 +49,8 @@ class UserRegistrationForm(forms.ModelForm):
                 code='invalid_postal_code'
             )
         ],
-        label="Kod Pocztowy"
+        label="Kod Pocztowy",
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Dodano form-control
     )
 
     class Meta:
@@ -67,7 +85,6 @@ class UserRegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
-            user.profile.fuel_type = self.cleaned_data['fuel_type']
             user.profile.city = self.cleaned_data['city']
             user.profile.postal_code = self.cleaned_data['postal_code']
             user.profile.save()
