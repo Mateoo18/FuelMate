@@ -1,3 +1,4 @@
+from sys import exec_prefix
 
 import googlemaps
 from django.shortcuts import render
@@ -99,18 +100,45 @@ def update_prices(request, Station_Id):
     fuels = Fuel.objects.all()
 
     if request.method == "POST":
+        last_entry = PriceHistory.objects.filter(user=request.user).order_by('-Date').first()
+        if last_entry and (timezone.now() - last_entry.Date).total_seconds() < 600:
+            # Jeśli ostatni wpis jest młodszy niż 10 minut
+            messages.error(request, "Nie możesz dodać ceny ponownie przed upływem 10 minut.")
+            return redirect('add_prices:update_prices', Station_Id=Station_Id)
+
         print("Dane POST:", request.POST)
         print("Zalogowany użytkownik:", request.user)
         missing_prices = []
+        minus_prices = []
+        MAX_PRICE = 10.0  # Maksymalna dopuszczalna cena paliwa (w zł)
 
-        # Sprawdzenie brakujących cen
         for fuel in fuels:
             status = request.POST.get(f"status_{fuel.fuel_id}")
             new_price = request.POST.get(f"price_{fuel.fuel_id}")
 
-            if status == "add" and not new_price:
+            # Sprawdzenie poprawności ceny
+            if new_price is not None and new_price.strip() != '':
+                try:
+                    new_price = float(new_price.replace(',', '.'))
+                    if new_price <= 0:
+                        minus_prices.append(fuel.Name)
+                    elif new_price > MAX_PRICE:
+                        messages.warning(request,
+                                         f"Cena paliwa {fuel.Name} jest zbyt wysoka ({new_price} zł). Maksymalna dopuszczalna cena to {MAX_PRICE} zł.")
+                        return redirect('add_prices:update_prices', Station_Id=Station_Id)
+                except ValueError:
+                    messages.warning(request, f"Podana cena nie jest liczbą: {new_price}.")
+                    return redirect('add_prices:update_prices', Station_Id=Station_Id)
+            elif status == "add":  # Cena wymagana w trybie 'add', ale brak wartości
                 missing_prices.append(fuel.Name)
 
+        # Obsługa błędów cen ujemnych
+        if minus_prices:
+            minuses_fuel = ", ".join(minus_prices)
+            messages.warning(request, f"Ceny paliw nie mogą być mniejsze od zera dla paliw: {minuses_fuel}.")
+            return redirect('add_prices:update_prices', Station_Id=Station_Id)
+
+        # Obsługa brakujących cen
         if missing_prices:
             missing_fuels = ", ".join(missing_prices)
             messages.warning(request, f"Musisz uzupełnić ceny dla następujących paliw: {missing_fuels}.")
@@ -120,6 +148,8 @@ def update_prices(request, Station_Id):
         for fuel in fuels:
             status = request.POST.get(f"status_{fuel.fuel_id}")
             new_price = request.POST.get(f"price_{fuel.fuel_id}")
+            if new_price is not None:
+                new_price = float(new_price.replace(',', '.'))
 
             if status == "add" and new_price:
                 try:
@@ -151,8 +181,12 @@ def update_prices(request, Station_Id):
                     print(f"historia dla: {request.user} dla paliwa {fuel.Name}")
                 except ValueError:
                     print("????")
-                    messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
+                    if(new_price<=0):
+                        messages.error(request, f"Ujemna wartość ceny dla paliwa {fuel.Name}.")
+                    else:
+                        messages.error(request, f"Nieprawidłowa wartość ceny dla paliwa {fuel.Name}.")
                     return redirect('add_prices:update_prices', Station_Id=Station_Id)
+
 
             elif status == "none":
                 # Ustawienie ceny na 0, jeśli paliwa chwilowo brak
