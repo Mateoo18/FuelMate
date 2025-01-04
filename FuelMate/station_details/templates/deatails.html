@@ -84,24 +84,25 @@
     <div class="row">
         <!-- Lewa kolumna: szczegóły stacji -->
         <div class="col-md-8">
-            <h1 class="display-4 mb-4">Szczegóły Stacji: {{ station.Name }}</h1>
+            <h1 class="display-4 mb-4">
+                Szczegóły Stacji: {{ station.Name }}
+                <!-- Ikona serduszka dla ulubionych -->
+
+                    {% if is_favorite %}
+                        <a href=/station_details/details/{{ station.Station_Id }}/remove id="favorite-button" data-station-id="{{ station.Station_Id }}">
+                        <i class="fas fa-heart" style="color: red;"></i>  <!-- Pełne serce -->
+                    {% else %}
+                        <a href=/station_details/details/{{ station.Station_Id }}/add id="favorite-button" data-station-id="{{ station.Station_Id }}">
+                        <i class="far fa-heart" style="color: red;"></i>  <!-- Puste serce -->
+                    {% endif %}
+                </a>
+            </h1>
             <ul class="list-group">
                 <li class="list-group-item"><strong>Adres:</strong> {{ station.Address }}, {{ station.City }}</li>
                 <li class="list-group-item"><strong>Telefon:</strong> {{ station.Phone }}</li>
                 <!--<li class="list-group-item"><strong>Rodzaj Paliwa:</strong> {{ station.fuel_types }}</li>-->
                 <li class="list-group-item"><strong>Kod Pocztowy:</strong> {{ station.postal_code }}</li>
             </ul>
-            <h1 class="display-4 mb-4">
-                Szczegóły Stacji: {{ station.Name }}
-                <!-- Ikona serduszka dla ulubionych -->
-                <a href="#" id="favorite-button" data-station-id="{{ station.id }}">
-                    {% if is_favorite %}
-                        <i class="fas fa-heart" style="color: red;"></i>  <!-- Pełne serce -->
-                    {% else %}
-                        <i class="far fa-heart" style="color: red;"></i>  <!-- Puste serce -->
-                    {% endif %}
-                </a>
-            </h1>
 
             <!-- Sekcja z aktualnymi cenami -->
             <h2 class="mt-4">Aktualne Ceny Paliw</h2>

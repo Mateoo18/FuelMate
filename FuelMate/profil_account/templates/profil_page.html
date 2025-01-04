@@ -11,97 +11,43 @@
         }
     </style>
 </head>
-    <div class="containertt">
-        <h1>Profil użytkownika: {{ user.username }}</h1>
+<div class="containertt">
+    <h1>Profil użytkownika: {{ user.username }}</h1>
 
-        <!-- Nawigacja - Zakładki -->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Profil</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="favorites-tab" data-bs-toggle="tab" href="#favorites" role="tab" aria-controls="favorites" aria-selected="false">Ulubione Stacje</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="search-tab" data-bs-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="false">Wyszukiwanie Stacji</a>
-            </li>
-            <!-- Nowa zakładka - Dodaj Ceny -->
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="add-price-tab" data-bs-toggle="tab" href="#add-price" role="tab" aria-controls="add-price" aria-selected="false">Dodaj Ceny</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="people-ranking-tab" data-bs-toggle="tab" href="#people-ranking" role="tab" aria-controls="people-ranking" aria-selected="false">Ranking</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="price_history-tab" data-bs-toggle="tab" href="#price_history" role="tab" aria-controls="price_history" aria-selected="false">Ceny Historyczne</a>
-            </li>
+    <!-- Nawigacja - Zakładki -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Profil</a>
+        </li>
+    </ul>
 
-        </ul>
-
-        <div class="tab-content mt-3" id="myTabContent">
-            <!-- Zakładka Profil -->
-            <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>Imię:</h3>
-                        <p>{{ user_info.First_name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Nazwisko:</h3>
-                        <p>{{ user_info.Last_name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Email:</h3>
-                        <p>{{ user_info.Email }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Data ostatniego logowania:</h3>
-                        <p>{{ user.last_login }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Status:</h3>
-                        <p>{{ user_info.Is_active }}</p>
-                    </div>
+    <div class="tab-content mt-3" id="myTabContent">
+        <!-- Zakładka Profil -->
+        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Imię:</h3>
+                    <p>{{ user_info.First_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Nazwisko:</h3>
+                    <p>{{ user_info.Last_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Email:</h3>
+                    <p>{{ user_info.Email }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Data ostatniego logowania:</h3>
+                    <p>{{ user.last_login }}</p>
                 </div>
             </div>
 
-            <!-- Zakładka Ulubione Stacje -->
-            <div class="tab-pane fade" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
-                <h2>Ulubione stacje:</h2>
-
-                {% for station in favorite_station_list %}
-                    <p>{{ station.Name }} - {{ station.Address }}</p>
-                {% endfor %}
-
-                <a href="{% url 'profil_account:add_favorite_station' %}">Dodaj Ulubioną Stację</a>
-                <a href="{% url 'profil_account:remove_favorite_station' %}">Usuń Ulubioną Stację</a>
-            </div>
-
-            <!-- Zakładka Wyszukiwanie Stacji -->
-            <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
-                <h2>Wyszukiwanie stacji:</h2>
-                <a href="{% url 'locate_station:search' %}">Znajdź stacje</a><br>
-            </div>
-
-            <!-- Zakładka Dodaj Ceny -->
-            <div class="tab-pane fade" id="add-price" role="tabpanel" aria-labelledby="add-price-tab">
-                <h2>Dodaj Ceny:</h2>
-                <p>Na tej zakładce możesz dodać ceny paliw dla stacji.</p>
-                <!-- Link do widoku, który pozwala dodać cenę -->
-                <a href="{% url 'add_prices:nearest_stations' %}">Dodaj cenę paliwa</a>
-            </div>
-            <div class="tab-pane fade" id="people-ranking" role="tabpanel" aria-labelledby="people-ranking-tab">
-                <h2>Ranking:</h2>
-                <p>Na tej zakładce możesz sprawdzić Ranking osób zgłaszających ceny paliw.</p>
-                <!-- Link do widoku, który pozwala dodać cenę -->
-                <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
-            </div>
-            <div class="tab-pane fade" id="price_history" role="tabpanel" aria-labelledby="price_history-tab">
-                <h2>Ceny Historyczne:</h2>
-                <p>Tu możesz sprawdzić ceny historyczne stacji paliw.</p>
-
-                <a href="{% url 'price_history:list_price' %}">Historia</a>
+            <!-- Edit and Delete Buttons -->
+            <div class="mt-3">
+                <a href="{% url 'profil_account:edit' %}" class="btn btn-primary">Edytuj</a>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

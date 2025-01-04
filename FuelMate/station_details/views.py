@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from urllib3 import request
 from django.shortcuts import render, get_object_or_404
-from stations.models import GasStations, StationFuel, PriceHistory, FavoriteStation, StationRating, RatingRecord
+from stations.models import GasStations, StationFuel, PriceHistory, FavoriteStation, StationRating, RatingRecord, Users
 from datetime import datetime, time
 import json
 from django.shortcuts import render, redirect
@@ -126,3 +126,23 @@ def add_station_rating(request, station_id):
         messages.error(request, "Nie wybrano oceny.")
         return redirect('station_details:station_details', station_id=station_id)
     return render(request, 'deatails.html', {'station': station, 'station_rating': station_rating})
+
+
+def station_add(request, station_id):
+
+    station = get_object_or_404(GasStations, Station_Id=station_id)
+
+    user = request.user
+    user_id = Users.objects.get(Username=user.username)
+
+
+    FavoriteStation.objects.create(User_Id=user_id, Station_Id=station)
+    return redirect('station_details:station_details', station_id=station_id)
+
+
+def station_remove(request, station_id):
+    station = get_object_or_404(GasStations, Station_Id=station_id)
+    user = request.user
+    user_id = user.id
+    FavoriteStation.objects.filter(User_Id=user_id, Station_Id=station.Station_Id).delete()
+    return redirect('station_details:station_details', station_id=station_id)
