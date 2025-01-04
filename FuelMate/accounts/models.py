@@ -7,10 +7,8 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    fuel_type = models.CharField(max_length=50, default='Gaz')
-
     city = models.CharField(max_length=100)
-
+    fuel_type = models.CharField(max_length=255, default='Gaz', null=False, blank=False)
     postal_code = models.CharField(max_length=6)
 
 
