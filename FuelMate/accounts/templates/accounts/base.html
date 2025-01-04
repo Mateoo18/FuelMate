@@ -12,6 +12,8 @@
             padding: 0;
             width: 100%;
             height: 100%;
+             display: flex;
+            flex-direction: column;
         }
         .navbar {
             position: absolute;
@@ -61,7 +63,7 @@
     margin-top: 0.8rem;
   font-size: 1.2rem;
   font-weight:700;
-  color: #000000;
+  color: white;
 
 }
 .logo1 span{
@@ -83,19 +85,20 @@
 .footer {
     background: #505050;
     color: #f6f6f6;
-    margin-top: 5rem;
-    margin-bottom: -10px;
+    text-align: center;
+    padding: 0.5rem 0; /* Zmniejszenie przestrzeni w stopce */
+    margin-top: auto;
 }
 
 .footer-container {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    margin-top: 8.5rem;
+    margin-top: 0.5rem;
 }
 
 .footer-container .logo1 {
-    color: black;
+    color: white;
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
@@ -142,16 +145,16 @@
 }
 
 .copyright {
-    margin-top: 3px;
-    padding: 20px;
-    text-align: center;
+    margin: 0; /* Usuń nadmiarowe marginesy */
+    padding: 0.3rem 0; /* Zmniejszenie odstępu wewnętrznego */
+    font-size: 0.9rem; /* Opcjonalnie zmniejszenie tekstu */
     color: var(--bg-color);
     background: #505050;
 }
 .custom-header {
     background: #505050; /* Gradient od niebieskiego do ciemnoniebieskiego */
     color: white;
-    padding: 1rem 0; /* Wewnętrzne marginesy */
+    padding: 2rem 0; /* Wewnętrzne marginesy */
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lekki cień */
     border-bottom: 3px solid #34d399; /* Akcentująca linia */
@@ -172,7 +175,7 @@
 
 /* "Fuel" stylizacja */
 .fuel {
-    color: black;
+    color: white;
 }
 
 /* "Mate" stylizacja */
@@ -199,7 +202,7 @@
     <!-- Pasek nawigacyjny -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'stations:default_page' %}">FuelMate</a>
+        <a class="navbar-brand" href="{% url 'stations:default_page' %}">Fuel<span class="mate">Mate</span> </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -261,15 +264,12 @@
                     <h3>Strona</h3>
                     <a href="{% url 'stations:default_page' %}">Strona Główna</a>
                     <a href="{% url 'add_prices:nearest_stations' %}">Dodaj Ceny Paliwa</a>
-                    <a href="{% url 'price_history:list_price' %}">Historia Cen</a>
                     <a href="{% url 'ranking:weekly_ranking' %}">Ranking</a>
-                    <a href="{% url 'profil_account:add_favorite_station' %}">Ulubione Stacje</a>
-                    <a href="{% url 'profil_account:profile' %}">Profil</a>
+
                 </div>
                 <div class="footer-box">
                     <h3>Prywatność</h3>
                     <a href="#">Polityka Prywatnośći</a>
-                    <a href="#">Polityka Zwrotów</a>
                     <a href="#">Cookies</a>
                 </div>
                 <div class="footer-box">
