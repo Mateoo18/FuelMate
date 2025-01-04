@@ -41,11 +41,11 @@
 </style>
 
 <div class="container">
-    <h2 class="text-center">Witamy na stronie użytkownika!</h2>
+    <h2 class="text-center"></h2>
 
     <!-- Sekcja wyszukiwania -->
     <section class="mt-4">
-    <h3>Wyszukaj stację paliw lub zlokalizuj mnie:</h3>
+    <h3>Wyszukaj stację paliw lub zlokalizuj:</h3>
         <form method="get" action="" class="row g-2 align-items-center mb-4">
             {% csrf_token %}
             <div class="col-auto flex-grow-1">
@@ -66,60 +66,65 @@
 
     <!-- Wyniki wyszukiwania -->
     {% if stations or nearby_stations %}
-    <section>
-        <h3>Wyniki wyszukiwania:</h3>
-        <ul class="list-group mb-4">
-            {% if stations %}
-                {% for station in stations %}
-                    <li class="list-group-item">
-                        <strong>{{ station.Name }}</strong><br>
-                        {{ station.Address }}<br>
-                        Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
-                    </li>
-                {% endfor %}
-            {% elif nearby_stations %}
-                {% for station in nearby_stations %}
-                    <li class="list-group-item">
-                        <strong>{{ station.Name }}</strong><br>
-                        {{ station.Address }}<br>
-                        Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
-                    </li>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">Brak wyników.</p>
-            {% endif %}
-        </ul>
-    </section>
-    {% endif %}
+<section>
+    <h3>Wyniki wyszukiwania:</h3>
+    <ul class="list-group mb-4">
+        {% if stations %}
+            {% for station in stations %}
+                <li class="list-group-item">
+                    {{ station.Address }}<br>
+                    Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
+                </li>
+            {% endfor %}
+        {% elif nearby_stations %}
+            {% for station in nearby_stations %}
+                <li class="list-group-item">
+                    <strong>
+                        <a href="/station_details/details/{{ station.Station_Id }}">{{ station.Name }} – Sprawdź ceny</a>
+                    </strong><br>
+                    {{ station.Address }}<br>
+                    Koordynaty: {{ station.Latitude }}, {{ station.Longitude }}
+                </li>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Brak wyników.</p>
+        {% endif %}
+    </ul>
+</section>
+{% endif %}
+
 
     <!-- Polecane stacje -->
     {% if recommended_stations %}
-    <section>
-        <h3>Polecane stacje paliw:</h3>
-        <table class="table table-striped">
-            <thead>
+<section>
+    <h3>Polecane stacje paliw:</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Adres</th>
+                <th>Odległość</th>
+                <th>Czas dojazdu</th>
+                <th>Główna Ocena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in recommended_stations %}
                 <tr>
-                    <th>Nazwa</th>
-                    <th>Adres</th>
-                    <th>Odległość</th>
-                    <th>Czas dojazdu</th>
-                    <th>Główna Ocena</th>
+                    <td>
+                        <a href="/station_details/details/{{ station.0.Station_Id }}">{{ station.0.Name }} – Sprawdź ceny</a>
+                    </td>
+                    <td>{{ station.0.Address }}</td>
+                    <td>{{ station.2 }} km</td> <!-- Zaokrąglona odległość do 2 miejsc po przecinku -->
+                    <td>{{ station.1 }} min</td>
+                    <td>{{ station.3 }} /5</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for station in recommended_stations %}
-                    <tr>
-                        <td>{{ station.0.Name  }}</td>
-                        <td>{{ station.0.Address  }}</td>
-                        <td>{{ station.2 }} km</td>  <!-- Zaokrąglona odległość do 2 miejsc po przecinku -->
-                        <td>{{ station.1 }} min</td>
-                        <td>{{ station.3 }} /5</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-    {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+
 
     <!-- Przycisk powrotu -->
     <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary mt-3 w-100">Wróć</a>
