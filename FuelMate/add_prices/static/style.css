@@ -17,7 +17,7 @@ h2 {
     margin-top: 30px;
 }
 
-/* Powiadomienia */
+/* Powiadomienia
 #notifications {
     position: fixed;
     top: 10px;
@@ -36,7 +36,7 @@ h2 {
     border-radius: 5px;
     text-align: center;
 }
-
+*/
 /* Mapa */
 #map {
     width: 100%;
@@ -99,3 +99,64 @@ textarea {
     font-size: 14px;
     min-height: 100px;
 }
+.station-info {
+    text-align: center; /* Wyśrodkowanie zawartości */
+    margin-top: 20px; /* Odstęp od góry */
+}
+
+.station-name {
+    font-size: 1.8rem; /* Większy rozmiar czcionki dla nazwy stacji */
+    font-weight: bold;
+    color: #2c3e50; /* Stonowany ciemny kolor */
+}
+
+.station-address {
+    font-size: 1.2rem; /* Mniejszy rozmiar czcionki dla adresu */
+    color: #7f8c8d; /* Neutralny odcień dla adresu */
+}
+
+.btn-primary {
+    background-color: #32de84; /* Kolor przycisku */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background-color: #2ec774; /* Ciemniejszy odcień zielonego przy hover */
+}
+#custom-notifications {
+    margin: 20px 0 !important;
+}
+
+.notification-box {
+    padding: 15px !important;
+    border-radius: 5px !important;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Style dla różnych typów powiadomień */
+.notification-box.error {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+.notification-box.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.notification-box.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+

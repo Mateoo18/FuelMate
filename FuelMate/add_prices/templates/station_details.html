@@ -10,18 +10,198 @@
     <title>Aktualizacja cen paliw</title>
 
     <!-- Link do pliku CSS -->
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <!--<link rel="stylesheet" href="{% static 'style.css' %}">-->
+    <style>
+/* style.css */
+
+/* Ogólny styl dla strony */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+h1, h2 {
+    font-weight: 600;
+    color: #333;
+}
+
+h2 {
+    margin-top: 30px;
+}
+
+/* Powiadomienia
+#notifications {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 90%;
+    max-width: 400px;
+}
+
+.notification {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+}
+*/
+/* Mapa */
+#map {
+    width: 100%;
+    height: 300px; /* Zmniejszenie mapy */
+    margin: 20px 0;
+    border: 1px solid #ddd;
+}
+
+/* Formularz aktualizacji cen paliw */
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+form table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+form th, form td {
+    padding: 10px;
+    text-align: left;
+}
+
+form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Sekcja zgłaszania zażaleń */
+h2 + form {
+    margin-top: 30px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    min-height: 100px;
+}
+.station-info {
+    text-align: center; /* Wyśrodkowanie zawartości */
+    margin-top: 20px; /* Odstęp od góry */
+}
+
+.station-name {
+    font-size: 1.8rem; /* Większy rozmiar czcionki dla nazwy stacji */
+    font-weight: bold;
+    color: #2c3e50; /* Stonowany ciemny kolor */
+}
+
+.station-address {
+    font-size: 1.2rem; /* Mniejszy rozmiar czcionki dla adresu */
+    color: #7f8c8d; /* Neutralny odcień dla adresu */
+}
+
+.btn-primary {
+    background-color: #32de84; /* Kolor przycisku */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background-color: #2ec774; /* Ciemniejszy odcień zielonego przy hover */
+}
+#custom-notifications {
+    margin: 20px 0 !important;
+}
+
+.notification-box {
+    padding: 15px !important;
+    border-radius: 5px !important;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Style dla różnych typów powiadomień */
+.notification-box.error {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+.notification-box.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.notification-box.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+
+    </style>
 </head>
 <body>
-    <!-- Powiadomienia -->
-    <div id="notifications"></div>
 
  <!-- Nagłówek stacji paliw -->
-    <h1>{{ station.Name }}</h1>
-    <p><strong>Adres:</strong> {{ station.Address }}</p>
+    <div class="station-info text-center"> <!-- Kontener z klasą do wyśrodkowania -->
+    <h2 class="station-name">{{ station.Name }}</h2> <!-- Nazwa stacji -->
+    <p class="station-address">{{ station.Address }}</p> <!-- Adres stacji -->
 
-    <!-- Formularz aktualizacji cen paliw -->
+    <!-- Przycisk Szczegóły stacji -->
+    <a href="{% url 'station_details:station_details' station.Station_Id %}" class="btn btn-primary mt-3">
+        Szczegóły stacji
+    </a>
+</div>
     <h2>Ceny paliw</h2>
+
+    {% if messages %}
+    <div id="custom-notifications">
+        {% for message in messages %}
+            <div class="notification-box {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
     <form method="post" action="{% url 'add_prices:update_prices' Station_Id=station.Station_Id %}">
         {% csrf_token %}
         <table>
@@ -48,6 +228,7 @@
             </tr>
             {% endfor %}
         </table>
+        <h6>Uwaga: ceny paliwa możesz podać zarówno z przecinkiem jak i z kropką. </h6>
         <button type="submit">Zaktualizuj ceny</button>
     </form>
 
@@ -68,6 +249,10 @@
     <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.17.0/maps/maps.css"> <!-- Dodano plik CSS TomTom -->
 
     <script>
+        window.onload = function() {
+            // Upewnij się, że nie ma przewijania do elementu mapy
+            window.scrollTo(0, 0);
+        };
         // Przekazywanie zmiennych z Django do JS
         const stationLongitude = {{ station.Longitude }};
         const stationLatitude = {{ station.Latitude }};
@@ -143,10 +328,7 @@
             // Usuń powiadomienie po 5 sekundach
             setTimeout(() => div.remove(), 5000);
         });
-        window.onload = function() {
-    // Upewnij się, że nie ma przewijania do elementu mapy
-    window.scrollTo(0, 0);  // Przewija stronę na początek po załadowaniu
 }
     </script>
-    <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary">Wróć do Profilu</a>
+
 {% endblock %}

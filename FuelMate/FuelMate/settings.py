@@ -141,7 +141,8 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # To jest domyślna lokalizacja, ale zależnie od struktury możesz to zmienić
+    BASE_DIR / "static",
+    BASE_DIR / "add_prices" / "static",# To jest domyślna lokalizacja, ale zależnie od struktury możesz to zmienić
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
