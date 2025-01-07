@@ -26,15 +26,17 @@
         <h2 class="my-3">Twoje ulubione stacje:</h2>
 
         {% for station in favorite_station_list %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ station.Name }}</h5>
-                    <p class="card-text">{{ station.Address }}</p>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="/station_details/details/{{ station.Station_Id }}">{{ station.Name }}</a>
+                        </h5>
+                        <p class="card-text">{{ station.Address }}</p>
+                    </div>
                 </div>
-            </div>
-        {% empty %}
-            <p class="text-muted">Nie masz jeszcze ulubionych stacji.</p>
-        {% endfor %}
+            {% empty %}
+                <p class="text-muted">Nie masz jeszcze ulubionych stacji.</p>
+            {% endfor %}
 
         <div class="actions mt-4">
             <a href="{% url 'profil_account:add_favorite_station' %}" class="btn btn-primary w-100 mb-2">Dodaj Ulubioną Stację</a>

@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from stations.models import Users, FavoriteStation, GasStations
+from stations.models import Users, FavoriteStation, GasStations,User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.shortcuts import render, redirect
 from stations.views import favorite_station_list
 
 
@@ -100,3 +100,39 @@ def favorite_station(request):
         favorite_station_list.append(station)
 
     return render(request, 'favorite_station.html', {'favorite_station_list': favorite_station_list})
+
+@login_required
+def edit(request):
+    user = request.user
+    user_info = Users.objects.get(UserId=user.id)
+
+    if request.method == 'POST':
+        # Get data from POST request
+        name = request.POST.get('name')
+        surname = request.POST.get('surname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+
+        print(name)
+        print(surname)
+        print(email)
+        print(phone)
+
+        # Ensure email is not empty before updating
+        if email:
+            user_info.Email = email
+        else:
+            return render(request, 'edit.html', {'user_info': user_info})
+
+        # Update user_info with form data
+        user_info.First_name = name
+        user_info.Last_name = surname
+        user_info.save()
+
+        # Show success message
+
+        return redirect('profil_account:profile')  # Redirect to profile page or another page
+
+    return render(request, 'edit.html', {'user_info': user_info})
+
+
