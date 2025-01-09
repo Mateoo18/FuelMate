@@ -5,40 +5,76 @@
 {% block content %}
 <head>
     <style>
-        .containertt{
+        .containertt {
             margin-top: 110px;
             margin-bottom: 200px;
         }
+
+        .btn-custom {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-custom.btn-success {
+            background-color: #28a745;
+            border: none;
+            color: white;
+        }
+
+        .btn-custom.btn-success:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .btn-custom.btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            color: white;
+        }
+
+        .btn-custom.btn-secondary:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
-    <div class="containertt">
-        <h1 class="my-4">Sprawdz Ceny Historyczne</h1>
+<div class="containertt">
+    <h1 class="my-4">Sprawdz Ceny Historyczne</h1>
 
-        <!-- Displaying messages -->
-        {% if messages %}
-            <div class="alert alert-info">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
+    <!-- Displaying messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="station" class="form-label">Wybierz Stację:</label>
+            <select class="form-control" id="station" name="station_id" required>
+                <option value="0" disabled selected>Wybierz stację</option>
+                {% for station in stations %}
+                    <option value="{{ station.Station_Id }}">{{ station.Name }} - {{ station.Address }}</option>
                 {% endfor %}
-            </div>
-        {% endif %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-custom btn-success mt-3">Sprawdz Ceny Historyczne</button>
+    </form>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="station" class="form-label">Wybierz Stację:</label>
-                <select class="form-control" id="station" name="station_id" required>
-                    <option value="0" disabled selected>Wybierz stację</option>
-                    {% for station in stations %}
-                        <option value="{{ station.Station_Id }}">{{ station.Name }} - {{ station.Address }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success mt-3 w-100">Sprawdz Ceny Historyczne</button>
-        </form>
-
-
-        <a href="{% url 'profil_account:profile' %}" class="btn btn-secondary mt-3 w-100">Wróć</a>
-
-    </div>
+    <a href="{% url 'stations:default_page' %}" class="btn btn-custom btn-secondary mt-3">Wróć Na Stronę Główną</a>
+</div>
 {% endblock %}
