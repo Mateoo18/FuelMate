@@ -134,6 +134,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>Użytkownik</th>
                                     <th>Stacja</th>
                                     <th>Paliwo</th>
                                     <th>Cena</th>
@@ -144,10 +145,11 @@
                             <tbody>
                                 {% for anomaly in anomalies %}
                                 <tr>
+                                    <td>{{ anomaly.user}}</td>
                                     <td>{{ anomaly.Station_Id.Name }}</td>
                                     <td>{{ anomaly.Fuel_Id.Name }}</td>
                                     <td>{{ anomaly.Price }}</td>
-                                    <td>{{ anomaly.avg_price }}</td>
+                                    <td>{{ anomaly.avg_price | floatformat:2 }}</td>
                                     <td>{{ anomaly.Date }}</td>
                                 </tr>
                                 {% endfor %}

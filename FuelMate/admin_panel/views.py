@@ -1,9 +1,10 @@
 from gc import get_objects
 
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from django.db.models import Avg, F, ExpressionWrapper, FloatField
+from django.db.models import Avg, F, ExpressionWrapper, FloatField, Subquery, OuterRef
 from stations.models import Users, FavoriteStation, GasStations,PriceHistory,Fuel,Complain
 from datetime import timedelta
 from django.utils.timezone import now
@@ -31,20 +32,22 @@ def admin_dashboard(request):
     anomalies = (
         PriceHistory.objects
         .annotate(
-            avg_price=ExpressionWrapper(
-                F('Fuel_Id'),
-                output_field=FloatField()
+            avg_price=Subquery(
+                PriceHistory.objects.filter(Fuel_Id=OuterRef('Fuel_Id'))
+                .values('Fuel_Id')
+                .annotate(avg_price=Avg('Price'))
+                .values('avg_price')[:1]
             ),
-            deviation=ExpressionWrapper(
-                F('Price') - F('avg_price'),
-                output_field=FloatField()
-            )
+            deviation=F('Price') - F('avg_price')
         )
-        .filter(
-            deviation__gt=1.1 * F('avg_price')
-        )
-        .select_related('Station_Id', 'Fuel_Id')
+        .filter(deviation__gt=1.1 * F('avg_price'))
+        .select_related('Station_Id', 'Fuel_Id', 'user')
     )
+    anomalies_with_user = []
+    for anomaly in anomalies:
+        anomalies_with_user.append({
+            'user': anomaly.user.username
+        })
 
     # Pobieramy wszystkie zgłoszenia z tabeli `Reports`
     complain= Complain.objects.all()
@@ -71,6 +74,8 @@ def admin_dashboard(request):
     })
 
 
+
+
 @login_required
 def delete_prices(request):
     if not request.user.is_superuser:
@@ -84,11 +89,31 @@ def delete_prices(request):
         station_id = request.POST.get('station_id')
 
         if record_id:
-            # Usunięcie wybranego rekordu
             try:
-                record = get_object_or_404(PriceHistory, pk=record_id)
-                record.delete()
-                messages.success(request, "Rekord został usunięty.")
+                with transaction.atomic():
+                    record = get_object_or_404(PriceHistory, pk=record_id)
+                    station_fuel_record = StationFuel.objects.filter(
+                        Station_Id=record.Station_Id,
+                        Fuel_Id=record.Fuel_Id,
+                        Price=record.Price
+                    ).first()
+                    record.delete()
+                    if station_fuel_record:
+                        station_fuel_record.delete()
+                        previous_price = PriceHistory.objects.filter(
+                            Station_Id=record.Station_Id,
+                            Fuel_Id=record.Fuel_Id
+                        ).exclude(pk=record_id).order_by('-Date').first()
+
+                        if previous_price:
+                            StationFuel.objects.create(
+                                Station_Id=previous_price.Station_Id,
+                                Fuel_Id=previous_price.Fuel_Id,
+                                Price=previous_price.Price,
+                                user=previous_price.user
+                            )
+                            messages.success(request, "Zaktualizowano StationFuel na podstawie poprzedniej ceny.")
+
             except Exception as e:
                 messages.error(request, f"Błąd podczas usuwania rekordu: {e}")
         elif station_id:
@@ -99,6 +124,7 @@ def delete_prices(request):
         'stations': stations,
         'price_history_records': price_history_records,
     })
+
 
 from django.db.models import Sum
 
