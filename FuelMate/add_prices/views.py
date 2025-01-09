@@ -40,6 +40,7 @@ def get_location():
 def nearest_stations(request):
     stations = []
     error = None
+    max_distance_km = 1.5  # Maksymalna odległość w kilometrach
 
     if request.user.is_superuser:
         # Superuser - pokaż wszystkie stacje
@@ -52,11 +53,24 @@ def nearest_stations(request):
             latitude = float(latitude)
             longitude = float(longitude)
 
-            # Filtracja najbliższych stacji
+            # Filtracja najbliższych stacji z uwzględnieniem maksymalnej odległości
             stations = GasStations.objects.raw(
-                'SELECT *, (6371 * acos(cos(radians(%s)) * cos(radians("latitude")) * '
-                'cos(radians("longitude") - radians(%s)) + sin(radians(%s)) * sin(radians("latitude")))) AS distance '
-                'FROM "Gas_Stations" ORDER BY distance LIMIT 5', [latitude, longitude, latitude]
+                '''
+                SELECT *, 
+                (6371 * acos(
+                    cos(radians(%s)) * cos(radians("latitude")) * 
+                    cos(radians("longitude") - radians(%s)) + 
+                    sin(radians(%s)) * sin(radians("latitude"))
+                )) AS distance
+                FROM "Gas_Stations"
+                WHERE (6371 * acos(
+                    cos(radians(%s)) * cos(radians("latitude")) * 
+                    cos(radians("longitude") - radians(%s)) + 
+                    sin(radians(%s)) * sin(radians("latitude"))
+                )) <= %s
+                ORDER BY distance
+                LIMIT 5
+                ''', [latitude, longitude, latitude, latitude, longitude, latitude, max_distance_km]
             )
         else:
             error = 'Nie można pobrać lokalizacji.'
@@ -72,7 +86,6 @@ def nearest_stations(request):
         'error': error,
         'is_superuser': request.user.is_superuser  # Informacja dla szablonu
     })
-
 def station_to_list(request, Station_Id):
     station = get_object_or_404(GasStations, Station_Id=Station_Id)
     if request.method == "POST":
