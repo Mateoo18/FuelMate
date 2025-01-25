@@ -164,7 +164,7 @@
                 <div class="station-card">
                     <p><strong>{{ station.Name }}</strong></p>
                     <p>{{ station.Address }}</p>
-                    <a href="{% if station.Station_Id %}{% url 'add_prices:update_prices' station.Station_Id %}{% else %}#{% endif %}" class="btn btn-secondary">Zmień cenę</a>
+                    <a href="{% url 'add_prices:update_prices' station.Station_Id %}" class="btn btn-secondary">Zmień cenę</a>
                 </div>
             {% endfor %}
         {% elif error %}

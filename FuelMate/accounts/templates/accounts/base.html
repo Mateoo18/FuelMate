@@ -187,7 +187,10 @@
 .logo-link:hover .mate {
     color: #10b981; /* Trochę ciemniejszy zielony na hover */
 }
+
+
 </style>
+
 </head>
 <body class="bg-light">
    <header class="custom-header">
@@ -229,6 +232,13 @@
                         <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
                            href="{% url 'profil_account:profile' %}">Profil</a>
                     </li>
+                     {% if user.is_superuser %}
+                         <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                           href="{% url 'admin_panel:admin_dashboard' %}">Panel Administratora</a>
+                        </li>
+
+                     {% endif %}
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}"

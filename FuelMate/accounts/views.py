@@ -23,7 +23,7 @@ def register_view(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()  # Save the user without logging them in
-            messages.success(request, "Registration successful. Please log in.")
+            # messages.success(request, "Registration successful. Please log in.")
             return redirect(reverse('accounts:login'))  # Redirect to the login page
     else:
         form = UserRegistrationForm()
