@@ -110,19 +110,12 @@ def edit(request):
         # Get data from POST request
         name = request.POST.get('name')
         surname = request.POST.get('surname')
-        email = request.POST.get('email')
         phone = request.POST.get('phone')
 
         print(name)
         print(surname)
-        print(email)
         print(phone)
 
-        # Ensure email is not empty before updating
-        if email:
-            user_info.Email = email
-        else:
-            return render(request, 'edit.html', {'user_info': user_info})
 
         # Update user_info with form data
         user_info.First_name = name
