@@ -75,7 +75,9 @@ Top 10 users are displayed with medal colours:
 
 Rank	Colour
 1	🥇 gold
+
 2	🥈 silver
+
 3	🥉 bronze
 
 ## 🗂 Project layout
@@ -88,4 +90,17 @@ Rank	Colour
         ├─ static/            global CSS & JS
         ├─ templates/
         └─ manage.py
+## 🛠️ Tech Stack
+
+| Layer | Technology | Why we chose it |
+|-------|-------------|-----------------|
+| **Language** | **Python 3.11** | Rapid development, rich ecosystem |
+| **Web Framework** | **Django 3.2** | MTV architecture, built-in auth, ORM, admin |
+| **Database** | **PostgreSQL 14 + psycopg2** | Reliability, GIS functions, JSON support |
+| **Background Jobs** | **django-cron** | Lightweight, database-driven scheduling |
+| **Maps & Geo** | - **Google Maps Geolocation API** – user position<br>- **TomTom Maps Web SDK 6.x** – interactive maps & markers | Accurate location + free interactive tiles |
+| **Frontend** | - **HTML5 / CSS3 / ES6**<br>- **Bootstrap 5.1** – responsive UI<br>- **Chart.js** – historical price charts<br>- **Font Awesome 5** & **Boxicons** | Modern, mobile-first interface |
+| **Styling / Icons** | Custom SCSS → compiled CSS, CSS variables, icons for UX | Theming & quick visual feedback |
+| **Version Control** | **Git** + **GitHub** | Collaboration, CI/CD hooks |
+| **Packaging** | `pip`, `requirements.txt`, virtual env | Reproducible installs |
 
