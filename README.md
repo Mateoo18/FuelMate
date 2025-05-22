@@ -36,8 +36,7 @@ python manage.py migrate
 python manage.py runserver
 Browse to http://127.0.0.1:8000.
 
-
-👥 Roles & features
+## 👥 Roles & features
 Regular user
 * One-click geolocation → list of stations within 2 km
 
@@ -64,12 +63,12 @@ Administrator
 
 * Station & user management
 
-🔍 How “Find nearest” works
+## 🔍 How “Find nearest” works
 
 FuelMate calls Google Maps Geolocation API to retrieve the client’s coordinates.
 A raw SQL (Haversine) query returns all stations inside a 2 km radius, ordered by distance.
 
-🏅 Weekly ranking
+## 🏅 Weekly ranking
 
 A scheduled task sums user points from Monday 00:00 to Sunday 23:59.
 Top 10 users are displayed with medal colours:
@@ -79,13 +78,14 @@ Rank	Colour
 2	🥈 silver
 3	🥉 bronze
 
-🗂 Project layout
-FuelMate/
-├─ accounts/          authentication & profiles
-├─ add_prices/        price submission flow
-├─ admin_panel/       anomaly dashboard
-├─ price_history/     charts & logs
-├─ station_details/   station view + rating
-├─ static/            global CSS & JS
-├─ templates/
-└─ manage.py
+## 🗂 Project layout
+       FuelMate/
+        ├─ accounts/          authentication & profiles
+        ├─ add_prices/        price submission flow
+        ├─ admin_panel/       anomaly dashboard
+        ├─ price_history/     charts & logs
+        ├─ station_details/   station view + rating
+        ├─ static/            global CSS & JS
+        ├─ templates/
+        └─ manage.py
+
