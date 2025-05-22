@@ -12,7 +12,6 @@ Administrators gain an extra dashboard for anomaly detection, complaint handling
 ---
 
 ## 📸 Screenshots  
-*Place your screenshots in a folder called **`screenshots/`** (at repo root) and keep the filenames below.*
 
 | Screen              | Preview                                               |
 | ------------------- | ----------------------------------------------------- |
@@ -28,8 +27,8 @@ git clone https://github.com/<your-user>/FuelMate.git
 cd FuelMate
 
 python -m venv env
-# Windows ➜ env\Scripts\activate
-# macOS/Linux ➜ source env/bin/activate
+* Windows ➜ env\Scripts\activate
+* macOS/Linux ➜ source env/bin/activate
 pip install -r requirements.txt
 
 cp .env.template .env          # add your GOOGLE_API_KEY inside
@@ -66,10 +65,12 @@ Administrator
 * Station & user management
 
 🔍 How “Find nearest” works
+
 FuelMate calls Google Maps Geolocation API to retrieve the client’s coordinates.
 A raw SQL (Haversine) query returns all stations inside a 2 km radius, ordered by distance.
 
 🏅 Weekly ranking
+
 A scheduled task sums user points from Monday 00:00 to Sunday 23:59.
 Top 10 users are displayed with medal colours:
 
